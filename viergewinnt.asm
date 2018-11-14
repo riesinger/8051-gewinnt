@@ -21,7 +21,8 @@ MOV P0, 000h
 MOV P1, 000h
 mov IE, #10010010b
 mov tmod, #00000010b
-mov r7, #00h
+mov R6, #00h
+mov R7, #00h
 mov tl0, #0c0h
 mov th0, #0c0h
 setb tr0
@@ -30,22 +31,36 @@ clr C
 
 loop:
 
-AJMP loop
+JMP loop
 
-; timer wird vom Timer-Interrupt gemerufen. Es inkrementiert den counter in R7. Nach einer gewissen Zahl von takten wird das Display angezeigt. (jedes zweite mal mit den Daten von Spieler 2)
+; timer wird vom Timer-Interrupt gemerufen. Es inkrementiert den Counter in R7. Nach einer gewissen Zahl von Takten wird das Display angezeigt. Wird das Display angezeigt, wird in R6 inkrementiert, um bei jedem x-ten Aufruf Spieler 2 zu toggeln
 timer:
-inc R7
-mov A, R7
-subb A, #004h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 4 größer als A
-JNC timer_display
-CLR c
-ret
+INC R6
+MOV A, R6
+SUBB A, #04h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 4 größer als A
+JNC timer_show
+RET
+timer_show:
+INC R7
+MOV A, R7
+SUBB A, #02h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 2 größer als A
+JNC timer_spieler2
 timer_display:
-call display
-mov R7, #000h
-ret
+MOV R6, #00h
+CALL display
+RET
+timer_spieler2:
+MOV R7, #00h
+MOV A, SPIELER2AKTIV
+JZ timer_spieler2_an ; Wenn akku Inhalt = SPIELER2AKTIV gleich 0
+MOV SPIELER2AKTIV, #00h
+JMP timer_display
+timer_spieler2_an:
+MOV SPIELER2AKTIV, #0FFh
+JMP timer_display
 
-; Display gibt das Spielbrett aus. Falls in #SPIELER2AKTIV FFh steht, werden beide Zustände ausgegeben
+
+; Display gibt das Spielbrett aus. Falls in SPIELER2AKTIV FFh steht, werden beide Zustände ausgegeben
 display:
 MOV A, SPIELER2AKTIV
 ANL A, SPIELER2
