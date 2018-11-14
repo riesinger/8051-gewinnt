@@ -7,75 +7,108 @@ viergewinnt                                                                     
   0028                   6     SPIELER2 EQU 028h
   0030                   7     SPIELER2AKTIV EQU 030h
                          8
-                         9     loop:
-0000 7820               10     MOV R0, #SPIELER1
-0002 12000C             11     CALL display
-0005 7828               12     MOV R0, #spieler2
-0007 12000C             13     CALL display
-000A 0100               14     AJMP loop
-                        15
-                        16     ; Display gibt das Spielbrett für einen Spieler aus
-                        17     ; Die Adresse der Spielerdaten wird in R0 erwartet
-                        18     display:
-000C E530               19     MOV A, SPIELER2AKTIV
-000E 5528               20     ANL A, SPIELER2
-0010 4520               21     ORL A, SPIELER1
-0012 F580               22     MOV COLS, A
-0014 D290               23     SETB ROWS.0
-0016 C290               24     CLR ROWS.0
-0018 E530               25     MOV A, SPIELER2AKTIV
-001A 5529               26     ANL A, SPIELER2 + 1
-001C 4521               27     ORL A, SPIELER1 + 1
-001E F580               28     MOV COLS, A
-0020 D291               29     SETB ROWS.1
-0022 C291               30     CLR ROWS.1
-0024 E530               31     MOV A, SPIELER2AKTIV
-0026 552A               32     ANL A, SPIELER2 + 2
-0028 4522               33     ORL A, SPIELER1 + 2
-002A F580               34     MOV COLS, A
-002C D292               35     SETB ROWS.2
-002E C292               36     CLR ROWS.2
-0030 E530               37     MOV A, SPIELER2AKTIV
-0032 552B               38     ANL A, SPIELER2 + 3
-0034 4523               39     ORL A, SPIELER1 + 3
-0036 F580               40     MOV COLS, A
-0038 D293               41     SETB ROWS.3
-003A C293               42     CLR ROWS.3
-003C E530               43     MOV A, SPIELER2AKTIV
-003E 552C               44     ANL A, SPIELER2 + 4
-0040 4524               45     ORL A, SPIELER1 + 4
-0042 F580               46     MOV COLS, A
-0044 D294               47     SETB ROWS.4
-0046 C294               48     CLR ROWS.4
-0048 E530               49     MOV A, SPIELER2AKTIV
-004A 552D               50     ANL A, SPIELER2 + 5
-004C 4525               51     ORL A, SPIELER1 + 5
-004E F580               52     MOV COLS, A
-0050 D295               53     SETB ROWS.5
-0052 C295               54     CLR ROWS.5
-0054 E530               55     MOV A, SPIELER2AKTIV
-0056 552E               56     ANL A, SPIELER2 + 6
-0058 4526               57     ORL A, SPIELER1 + 6
-005A F580               58     MOV COLS, A
-005C D296               59     SETB ROWS.6
-005E C296               60     CLR ROWS.6
-0060 E530               61     MOV A, SPIELER2AKTIV
-0062 552F               62     ANL A, SPIELER2 + 7
-0064 4527               63     ORL A, SPIELER1 + 7
-0066 F580               64     MOV COLS, A
-0068 D297               65     SETB ROWS.7
-006A C297               66     CLR ROWS.7
-006C 22                 67     RET
-****WARNING: Missing `END' directive
-ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
+                         9     cseg at 0h
+0000 0120               10     ajmp init
+                        11     cseg at 100h
+                        12
+                        13     org 0bh
+****WARNING:ThisORGhaslowervaluethanthepreviousone
+000B 12003C             14     call timer
+000E 32                 15     reti
+                        16
+                        17     org 20h
+                        18     ; Init setzt Ausgänge und Speicherbereiche auf Initialwerte, aktiviert timer
+                        19     init:
+0020 850080             20     MOV P0, 000h
+0023 850090             21     MOV P1, 000h
+0026 75A892             22     mov IE, #10010010b
+0029 758902             23     mov tmod, #00000010b
+002C 7F00               24     mov r7, #00h
+002E 758AC0             25     mov tl0, #0c0h
+0031 758CC0             26     mov th0, #0c0h
+0034 D28C               27     setb tr0
+0036 120048             28     call display
+0039 C3                 29     clr C
+                        30
+                        31     loop:
+                        32
+003A 013A               33     AJMP loop
+                        34
+                        35     ; timer wird vom Timer-Interrupt gemerufen. Es inkrementiert den counter in R7. Wenn dieser 25 erreic
+                        36     ; wird die Anzeige ausgegeben (mittles call display).
+                        37     timer:
+003C 0F                 38     inc R7
+003D EF                 39     mov A, R7
+003E 9419               40     subb A, #019h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 25 größer als A
+0040 5002               41     JNC timer_display
+0042 C3                 42     CLR c
+0043 22                 43     ret
+                        44     timer_display:
+0044 120048             45     call display
+0047 22                 46     ret
+                        47
+                        48     ; Display gibt das Spielbrett aus. Falls in #SPIELER2AKTIV FFh steht, werden beide Zustände ausgegebe
+                        49     display:
+0048 E530               50     MOV A, SPIELER2AKTIV
+004A 5528               51     ANL A, SPIELER2
+004C 4520               52     ORL A, SPIELER1
+004E F580               53     MOV COLS, A
+0050 D290               54     SETB ROWS.0
+0052 C290               55     CLR ROWS.0
+0054 E530               56     MOV A, SPIELER2AKTIV
+0056 5529               57     ANL A, SPIELER2 + 1
+0058 4521               58     ORL A, SPIELER1 + 1
+005A F580               59     MOV COLS, A
+005C D291               60     SETB ROWS.1
+005E C291               61     CLR ROWS.1
+0060 E530               62     MOV A, SPIELER2AKTIV
+0062 552A               63     ANL A, SPIELER2 + 2
+0064 4522               64     ORL A, SPIELER1 + 2
+0066 F580               65     MOV COLS, A
+0068 D292               66     SETB ROWS.2
+006A C292               67     CLR ROWS.2
+006C E530               68     MOV A, SPIELER2AKTIV
+006E 552B               69     ANL A, SPIELER2 + 3
+0070 4523               70     ORL A, SPIELER1 + 3
+0072 F580               71     MOV COLS, A
+0074 D293               72     SETB ROWS.3
+0076 C293               73     CLR ROWS.3
+0078 E530               74     MOV A, SPIELER2AKTIV
+007A 552C               75     ANL A, SPIELER2 + 4
+007C 4524               76     ORL A, SPIELER1 + 4
+007E F580               77     MOV COLS, A
+0080 D294               78     SETB ROWS.4
+0082 C294               79     CLR ROWS.4
+0084 E530               80     MOV A, SPIELER2AKTIV
+0086 552D               81     ANL A, SPIELER2 + 5
+0088 4525               82     ORL A, SPIELER1 + 5
+008A F580               83     MOV COLS, A
+008C D295               84     SETB ROWS.5
+008E C295               85     CLR ROWS.5
+0090 E530               86     MOV A, SPIELER2AKTIV
+0092 552E               87     ANL A, SPIELER2 + 6
+0094 4526               88     ORL A, SPIELER1 + 6
+0096 F580               89     MOV COLS, A
+0098 D296               90     SETB ROWS.6
+009A C296               91     CLR ROWS.6
+009C E530               92     MOV A, SPIELER2AKTIV
+009E 552F               93     ANL A, SPIELER2 + 7
+00A0 4527               94     ORL A, SPIELER1 + 7
+00A2 F580               95     MOV COLS, A
+00A4 D297               96     SETB ROWS.7
+00A6 C297               97     CLR ROWS.7
+00A8 22                 98     RET
+****WARNING:Missing`END'directive
+ASSEMBLY COMPLETE, NO ERRORS FOUND, 2 WARNINGS
 
 
 ERROR SUMMARY:
-Line 67, WARNING: Missing `END' directive
+Line 13, WARNING:ThisORGhaslowervaluethanthepreviousone
+Line 99, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
-??VERSION. . . . . . . . . . . . . .  N  NUMB  0147H  NOT USED
+??VERSION. . . . . . . . . . . . . .  N  NUMB  0149H  NOT USED
 AC . . . . . . . . . . . . . . . . .  B  ADDR  00D6H  NOT USED
 ACC. . . . . . . . . . . . . . . . .  D  ADDR  00E0H  NOT USED
 ACSR . . . . . . . . . . . . . . . .  D  ADDR  0097H  NOT USED
@@ -128,7 +161,7 @@ CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
-DISPLAY. . . . . . . . . . . . . . .  C  ADDR  000CH
+DISPLAY. . . . . . . . . . . . . . .  C  ADDR  0048H
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -150,9 +183,10 @@ EXTI0. . . . . . . . . . . . . . . .  C  ADDR  0003H  NOT USED
 EXTI1. . . . . . . . . . . . . . . .  C  ADDR  0013H  NOT USED
 F0 . . . . . . . . . . . . . . . . .  B  ADDR  00D5H  NOT USED
 FE . . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
-IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H  NOT USED
+IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H
 IE0. . . . . . . . . . . . . . . . .  B  ADDR  0089H  NOT USED
 IE1. . . . . . . . . . . . . . . . .  B  ADDR  008BH  NOT USED
+INIT . . . . . . . . . . . . . . . .  C  ADDR  0020H
 INT0 . . . . . . . . . . . . . . . .  B  ADDR  00B2H  NOT USED
 INT1 . . . . . . . . . . . . . . . .  B  ADDR  00B3H  NOT USED
 IP . . . . . . . . . . . . . . . . .  D  ADDR  00B8H  NOT USED
@@ -167,12 +201,12 @@ KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 KEYPAD . . . . . . . . . . . . . . .  N  NUMB  00A0H  NOT USED
-LOOP . . . . . . . . . . . . . . . .  C  ADDR  0000H
+LOOP . . . . . . . . . . . . . . . .  C  ADDR  003AH
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
-P0 . . . . . . . . . . . . . . . . .  D  ADDR  0080H  NOT USED
-P1 . . . . . . . . . . . . . . . . .  D  ADDR  0090H  NOT USED
+P0 . . . . . . . . . . . . . . . . .  D  ADDR  0080H
+P1 . . . . . . . . . . . . . . . . .  D  ADDR  0090H
 P1M1 . . . . . . . . . . . . . . . .  D  ADDR  00D4H  NOT USED
 P1M2 . . . . . . . . . . . . . . . .  D  ADDR  00E2H  NOT USED
 P2 . . . . . . . . . . . . . . . . .  D  ADDR  00A0H  NOT USED
@@ -243,18 +277,20 @@ TCON . . . . . . . . . . . . . . . .  D  ADDR  0088H  NOT USED
 TF0. . . . . . . . . . . . . . . . .  B  ADDR  008DH  NOT USED
 TF1. . . . . . . . . . . . . . . . .  B  ADDR  008FH  NOT USED
 TF2. . . . . . . . . . . . . . . . .  B  ADDR  00CFH  NOT USED
-TH0. . . . . . . . . . . . . . . . .  D  ADDR  008CH  NOT USED
+TH0. . . . . . . . . . . . . . . . .  D  ADDR  008CH
 TH1. . . . . . . . . . . . . . . . .  D  ADDR  008DH  NOT USED
 TH2. . . . . . . . . . . . . . . . .  D  ADDR  00CDH  NOT USED
 TI . . . . . . . . . . . . . . . . .  B  ADDR  0099H  NOT USED
+TIMER. . . . . . . . . . . . . . . .  C  ADDR  003CH
 TIMER0 . . . . . . . . . . . . . . .  C  ADDR  000BH  NOT USED
 TIMER1 . . . . . . . . . . . . . . .  C  ADDR  001BH  NOT USED
 TIMER2 . . . . . . . . . . . . . . .  C  ADDR  002BH  NOT USED
-TL0. . . . . . . . . . . . . . . . .  D  ADDR  008AH  NOT USED
+TIMER_DISPLAY. . . . . . . . . . . .  C  ADDR  0044H
+TL0. . . . . . . . . . . . . . . . .  D  ADDR  008AH
 TL1. . . . . . . . . . . . . . . . .  D  ADDR  008BH  NOT USED
 TL2. . . . . . . . . . . . . . . . .  D  ADDR  00CCH  NOT USED
-TMOD . . . . . . . . . . . . . . . .  D  ADDR  0089H  NOT USED
-TR0. . . . . . . . . . . . . . . . .  B  ADDR  008CH  NOT USED
+TMOD . . . . . . . . . . . . . . . .  D  ADDR  0089H
+TR0. . . . . . . . . . . . . . . . .  B  ADDR  008CH
 TR1. . . . . . . . . . . . . . . . .  B  ADDR  008EH  NOT USED
 TR2. . . . . . . . . . . . . . . . .  B  ADDR  00CAH  NOT USED
 TXD. . . . . . . . . . . . . . . . .  B  ADDR  00B1H  NOT USED

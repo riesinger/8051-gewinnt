@@ -6,12 +6,44 @@ SPIELER1 EQU 020h
 SPIELER2 EQU 028h
 SPIELER2AKTIV EQU 030h
 
+cseg at 0h
+ajmp init
+cseg at 100h
+
+org 0bh
+call timer
+reti
+
+org 20h
+; Init setzt Ausgänge und Speicherbereiche auf Initialwerte, aktiviert timer
+init:
+MOV P0, 000h
+MOV P1, 000h
+mov IE, #10010010b
+mov tmod, #00000010b
+mov r7, #00h
+mov tl0, #0c0h
+mov th0, #0c0h
+setb tr0
+call display
+clr C
+
 loop:
-MOV R0, #SPIELER1
-CALL display
-MOV R0, #spieler2
-CALL display
+
 AJMP loop
+
+; timer wird vom Timer-Interrupt gemerufen. Es inkrementiert den counter in R7. Nach einer gewissen Zahl von takten wird das Display angezeigt. (jedes zweite mal mit den Daten von Spieler 2)
+timer:
+inc R7
+mov A, R7
+subb A, #004h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 4 größer als A
+JNC timer_display
+CLR c
+ret
+timer_display:
+call display
+mov R7, #000h
+ret
 
 ; Display gibt das Spielbrett aus. Falls in #SPIELER2AKTIV FFh steht, werden beide Zustände ausgegeben
 display:
