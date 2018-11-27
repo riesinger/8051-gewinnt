@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8' standalone='no'?>
+<!DOCTYPE html PUBLIC
+	'-//W3C//DTD XHTML 1.1//EN'
+	'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
+	<head>
+		<title>/home/pascal/Projekte/8051-gewinnt/docs/undefined memory address</title>
+		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8">
+		<meta name="Generator" content="MCU 8051 IDE v1.4.9" />
+	</head>
+	<body>
+<h2>Summary:</h2><br />
+Your program tried indirect access to register at address <b>0x00FD in internal data memory</b>. This register is not implemented on this processor (<b>8051</b>) in this configuration. You can continue in simulation but result of this operation is undefined.<br />
+<br />
+<h2>Error details:</h2><br />
+<b>	Target memory:		</b>IDATA<br />
+<b>	Target address: 	</b>0x00FD (253)<br />
+<b>	Line:			</b>27<br />
+<b>	File:			</b>viergewinnt.asm<br />
+<b>	Project:		</b>Vier Gewinnt<br />
+<br />
+<h2>Processor details:</h2><br />
+<b>	Type:			</b>8051<br />
+<b>	Ram size:		</b>128 B<br />
+<b>	Program memory: 	</b>4096 B<br />
+<b>	External memory:	</b>0 B<br />
+<b>	Expanded memory:	</b>0 B<br />
+
+	</body>
+</html>

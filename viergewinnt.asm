@@ -15,7 +15,9 @@ ajmp init
 cseg at 100h
 
 org 0bh
+mov 19h, a
 call timer
+mov a, 19h
 reti
 
 org 20h
@@ -25,6 +27,7 @@ MOV COLS, 000h
 MOV ROWS, 000h
 mov IE, #10010010b
 mov tmod, #00000010b
+mov r6, #00h
 mov R7, #00h
 mov tl0, #0c0h
 mov th0, #0c0h
@@ -39,17 +42,22 @@ loop:
 call eingabe_abfragen
 ; Spielstand aktualisieren
 
-; Spieler wechseln
-
 JMP loop
 
 ; timer wird vom Timer-Interrupt gemerufen. Es inkrementiert den Counter in R7. Nach einer gewissen Zahl von Takten wird das Display angezeigt. Wird das Display angezeigt, wird in R6 inkrementiert, um bei jedem x-ten Aufruf Spieler 2 zu toggeln
 timer:
+INC R6
+MOV a, R6
+subb a, #02h
+jnc timer_show
+ret
+timer_show:
 INC R7
 MOV A, R7
 SUBB A, #01h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 1 größer als A
 JNC timer_spieler2
 timer_display:
+mov r6, #00h
 CALL display
 RET
 timer_spieler2:
@@ -116,14 +124,17 @@ CLR ROWS.7
 RET
 
 eingabe_abfragen:
-; Wenn wir nicht eingabebereit sind, dann gehen wir wieder zurück
-jnb eingabebereit, eingabe_fertig
 ; Lesen, welcher Button auf dem Keypad gedrückt wurde
 ; R3 = Eingabe
 mov a, p2
 cpl a
 mov r3, a
+jz eingabe_null
 ; TODO: Gegebenenfalls überprüfen, ob mehrere Buttons gedrückt wurden
+
+; Wenn wir nicht eingabebereit sind, dann gehen wir wieder zurück
+jnb eingabebereit, eingabe_fertig
+
 ; R2 = Schleifenzähler
 mov r2, #07h
 
@@ -160,7 +171,22 @@ mov a, @r0
 orl a, r3
 mov @r0, a
 
+clr EINGABEBEREIT
+call spieler_wechseln
+ret
+
+eingabe_null:
+setb EINGABEBEREIT
 eingabe_fertig:
+ret
+
+spieler_wechseln:
+mov a, #SPIELER1
+cjne a, AKTIVERSPIELER, spieler_zwei
+mov AKTIVERSPIELER, #SPIELER2
+ret
+spieler_zwei:
+mov AKTIVERSPIELER, #SPIELER1
 ret
 
 end
