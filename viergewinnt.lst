@@ -3,120 +3,178 @@ viergewinnt                                                                     
   0090                   2     ROWS EQU P1
   00A0                   3     KEYPAD EQU P2
                          4
-  0020                   5     SPIELER1 EQU 020h
-  0028                   6     SPIELER2 EQU 028h
-  0030                   7     SPIELER2AKTIV EQU 030h
+  0018                   5     AKTIVERSPIELER EQU 18h
+                         6     ; Eingabebereit wenn 20.0 = 1
+  0000                   7     EINGABEBEREIT EQU 00h
                          8
-                         9     cseg at 0h
-0000 0120               10     ajmp init
-                        11     cseg at 100h
+  0038                   9     SPIELER1 EQU 038h
+  0040                  10     SPIELER2 EQU 040h
+  0030                  11     SPIELER2AKTIV EQU 030h
                         12
-                        13     org 0bh
-****WARNING: This ORG has lower value than the previous one
-000B 12003F             14     call timer
-000E 32                 15     reti
+                        13     cseg at 0h
+0000 0120               14     ajmp init
+                        15     cseg at 100h
                         16
-                        17     org 20h
-                        18     ; Init setzt Ausgänge und Speicherbereiche auf Initialwerte, aktiviert timer
-                        19     init:
-0020 850080             20     MOV P0, 000h
-0023 850090             21     MOV P1, 000h
-0026 75A892             22     mov IE, #10010010b
-0029 758902             23     mov tmod, #00000010b
-002C 7E00               24     mov R6, #00h
-002E 7F00               25     mov R7, #00h
-0030 758AC0             26     mov tl0, #0c0h
-0033 758CC0             27     mov th0, #0c0h
-0036 D28C               28     setb tr0
-0038 120059             29     call display
-003B C3                 30     clr C
-                        31
-                        32     loop:
-                        33
-003C 02003C             34     JMP loop
-                        35
-                        36     ; timer wird vom Timer-Interrupt gemerufen. Es inkrementiert den Counter in R7. Nach einer gewissen Z
-                        37     timer:
-003F 0F                 38     INC R7
-0040 EF                 39     MOV A, R7
-0041 9401               40     SUBB A, #01h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 1 größer als A
-0043 5004               41     JNC timer_spieler2
-                        42     timer_display:
-0045 120059             43     CALL display
-0048 22                 44     RET
-                        45     timer_spieler2:
-0049 7F00               46     MOV R7, #00h
-004B E530               47     MOV A, SPIELER2AKTIV
-004D 6005               48     JZ timer_spieler2_an ; Wenn akku Inhalt = SPIELER2AKTIV gleich 0
-004F 753000             49     MOV SPIELER2AKTIV, #00h
-0052 80F1               50     JMP timer_display
-                        51     timer_spieler2_an:
-0054 7530FF             52     MOV SPIELER2AKTIV, #0FFh
-0057 80EC               53     JMP timer_display
-                        54
-                        55
-                        56     ; Display gibt das Spielbrett aus. Falls in SPIELER2AKTIV FFh steht, werden beide Zustände ausgegeben
-                        57     display:
-0059 E530               58     MOV A, SPIELER2AKTIV
-005B 5528               59     ANL A, SPIELER2
-005D 4520               60     ORL A, SPIELER1
-005F F580               61     MOV COLS, A
-0061 D290               62     SETB ROWS.0
-0063 C290               63     CLR ROWS.0
-0065 E530               64     MOV A, SPIELER2AKTIV
-0067 5529               65     ANL A, SPIELER2 + 1
-0069 4521               66     ORL A, SPIELER1 + 1
-006B F580               67     MOV COLS, A
-006D D291               68     SETB ROWS.1
-006F C291               69     CLR ROWS.1
-0071 E530               70     MOV A, SPIELER2AKTIV
-0073 552A               71     ANL A, SPIELER2 + 2
-0075 4522               72     ORL A, SPIELER1 + 2
-0077 F580               73     MOV COLS, A
-0079 D292               74     SETB ROWS.2
-007B C292               75     CLR ROWS.2
-007D E530               76     MOV A, SPIELER2AKTIV
-007F 552B               77     ANL A, SPIELER2 + 3
-0081 4523               78     ORL A, SPIELER1 + 3
-0083 F580               79     MOV COLS, A
-0085 D293               80     SETB ROWS.3
-0087 C293               81     CLR ROWS.3
-0089 E530               82     MOV A, SPIELER2AKTIV
-008B 552C               83     ANL A, SPIELER2 + 4
-008D 4524               84     ORL A, SPIELER1 + 4
-008F F580               85     MOV COLS, A
-0091 D294               86     SETB ROWS.4
-0093 C294               87     CLR ROWS.4
-0095 E530               88     MOV A, SPIELER2AKTIV
-0097 552D               89     ANL A, SPIELER2 + 5
-0099 4525               90     ORL A, SPIELER1 + 5
-009B F580               91     MOV COLS, A
-009D D295               92     SETB ROWS.5
-009F C295               93     CLR ROWS.5
-00A1 E530               94     MOV A, SPIELER2AKTIV
-00A3 552E               95     ANL A, SPIELER2 + 6
-00A5 4526               96     ORL A, SPIELER1 + 6
-00A7 F580               97     MOV COLS, A
-00A9 D296               98     SETB ROWS.6
-00AB C296               99     CLR ROWS.6
-00AD E530              100     MOV A, SPIELER2AKTIV
-00AF 552F              101     ANL A, SPIELER2 + 7
-00B1 4527              102     ORL A, SPIELER1 + 7
-00B3 F580              103     MOV COLS, A
-00B5 D297              104     SETB ROWS.7
-00B7 C297              105     CLR ROWS.7
-00B9 22                106     RET
-****WARNING: Missing `END' directive
-ASSEMBLY COMPLETE, NO ERRORS FOUND, 2 WARNINGS
+                        17     org 0bh
+****WARNING:ThisORGhaslowervaluethanthepreviousone
+000B 120044             18     call timer
+000E 32                 19     reti
+                        20
+                        21     org 20h
+                        22     ; Init setzt Ausgänge und Speicherbereiche auf Initialwerte, aktiviert timer
+                        23     init:
+0020 850080             24     MOV COLS, 000h
+0023 850090             25     MOV ROWS, 000h
+0026 75A892             26     mov IE, #10010010b
+0029 758902             27     mov tmod, #00000010b
+002C 7F00               28     mov R7, #00h
+002E 758AC0             29     mov tl0, #0c0h
+0031 758CC0             30     mov th0, #0c0h
+0034 D28C               31     setb tr0
+0036 751838             32     mov aktiverspieler, #spieler1
+0039 12005E             33     call display
+003C D200               34     setb EINGABEBEREIT
+003E C3                 35     clr C
+                        36
+                        37     loop:
+                        38     ; Eingabe abfragen
+003F 1200BF             39     call eingabe_abfragen
+                        40     ; Spielstand aktualisieren
+                        41
+                        42     ; Spieler wechseln
+                        43
+0042 80FB               44     JMP loop
+                        45
+                        46     ; timer wird vom Timer-Interrupt gemerufen. Es inkrementiert den Counter in R7. Nach einer gewissen Z
+                        47     timer:
+0044 0F                 48     INC R7
+0045 EF                 49     MOV A, R7
+0046 9401               50     SUBB A, #01h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 1 größer als A
+0048 5004               51     JNC timer_spieler2
+                        52     timer_display:
+004A 12005E             53     CALL display
+004D 22                 54     RET
+                        55     timer_spieler2:
+004E 7F00               56     MOV R7, #00h
+0050 E530               57     MOV A, SPIELER2AKTIV
+0052 6005               58     JZ timer_spieler2_an ; Wenn akku Inhalt = SPIELER2AKTIV gleich 0
+0054 753000             59     MOV SPIELER2AKTIV, #00h
+0057 80F1               60     JMP timer_display
+                        61     timer_spieler2_an:
+0059 7530FF             62     MOV SPIELER2AKTIV, #0FFh
+005C 80EC               63     JMP timer_display
+                        64
+                        65
+                        66     ; Display gibt das Spielbrett aus. Falls in SPIELER2AKTIV FFh steht, werden beide Zustände ausgegeben
+                        67     display:
+005E E530               68     MOV A, SPIELER2AKTIV
+0060 5540               69     ANL A, SPIELER2
+0062 4538               70     ORL A, SPIELER1
+0064 F580               71     MOV COLS, A
+0066 D290               72     SETB ROWS.0
+0068 C290               73     CLR ROWS.0
+006A E530               74     MOV A, SPIELER2AKTIV
+006C 5541               75     ANL A, SPIELER2 + 1
+006E 4539               76     ORL A, SPIELER1 + 1
+0070 F580               77     MOV COLS, A
+0072 D291               78     SETB ROWS.1
+0074 C291               79     CLR ROWS.1
+0076 E530               80     MOV A, SPIELER2AKTIV
+0078 5542               81     ANL A, SPIELER2 + 2
+007A 453A               82     ORL A, SPIELER1 + 2
+007C F580               83     MOV COLS, A
+007E D292               84     SETB ROWS.2
+0080 C292               85     CLR ROWS.2
+0082 E530               86     MOV A, SPIELER2AKTIV
+0084 5543               87     ANL A, SPIELER2 + 3
+0086 453B               88     ORL A, SPIELER1 + 3
+0088 F580               89     MOV COLS, A
+008A D293               90     SETB ROWS.3
+008C C293               91     CLR ROWS.3
+008E E530               92     MOV A, SPIELER2AKTIV
+0090 5544               93     ANL A, SPIELER2 + 4
+0092 453C               94     ORL A, SPIELER1 + 4
+0094 F580               95     MOV COLS, A
+0096 D294               96     SETB ROWS.4
+0098 C294               97     CLR ROWS.4
+009A E530               98     MOV A, SPIELER2AKTIV
+009C 5545               99     ANL A, SPIELER2 + 5
+009E 453D              100     ORL A, SPIELER1 + 5
+00A0 F580              101     MOV COLS, A
+00A2 D295              102     SETB ROWS.5
+00A4 C295              103     CLR ROWS.5
+00A6 E530              104     MOV A, SPIELER2AKTIV
+00A8 5546              105     ANL A, SPIELER2 + 6
+00AA 453E              106     ORL A, SPIELER1 + 6
+00AC F580              107     MOV COLS, A
+00AE D296              108     SETB ROWS.6
+00B0 C296              109     CLR ROWS.6
+00B2 E530              110     MOV A, SPIELER2AKTIV
+00B4 5547              111     ANL A, SPIELER2 + 7
+00B6 453F              112     ORL A, SPIELER1 + 7
+00B8 F580              113     MOV COLS, A
+00BA D297              114     SETB ROWS.7
+00BC C297              115     CLR ROWS.7
+00BE 22                116     RET
+                       117
+                       118     eingabe_abfragen:
+                       119     ; Wenn wir nicht eingabebereit sind, dann gehen wir wieder zurück
+00BF 300023            120     jnb eingabebereit, eingabe_fertig
+                       121     ; Lesen, welcher Button auf dem Keypad gedrückt wurde
+                       122     ; R3 = Eingabe
+00C2 E5A0              123     mov a, p2
+00C4 F4                124     cpl a
+00C5 FB                125     mov r3, a
+                       126     ; TODO: Gegebenenfalls überprüfen, ob mehrere Buttons gedrückt wurden
+                       127     ; R2 = Schleifenzähler
+00C6 7A07              128     mov r2, #07h
+                       129
+                       130     vergleich:
+                       131
+00C8 7438              132     mov a, #SPIELER1
+00CA 2A                133     add a, r2
+00CB F8                134     mov r0, a
+00CC E6                135     mov a, @R0
+00CD 5B                136     anl a, r3
+00CE F9                137     mov r1, a
+                       138
+00CF 7440              139     mov a, #SPIELER2
+00D1 2A                140     add a, r2
+00D2 F8                141     mov r0, a
+00D3 E6                142     mov a, @R0
+00D4 5B                143     anl a, r3
+                       144
+00D5 49                145     orl a, r1
+                       146     ; Wir können einfügen
+00D6 6006              147     jz einfuegen
+                       148     ; Schleifenabbruch
+00D8 EA                149     mov a, r2
+00D9 600A              150     jz eingabe_fertig
+                       151
+00DB 1A                152     dec r2
+00DC 80EA              153     jmp vergleich
+                       154
+                       155     einfuegen:
+00DE E518              156     mov a, AKTIVERSPIELER
+00E0 2A                157     add a, r2
+00E1 F8                158     mov r0, a
+00E2 E6                159     mov a, @r0
+00E3 4B                160     orl a, r3
+00E4 F6                161     mov @r0, a
+                       162
+                       163     eingabe_fertig:
+00E5 22                164     ret
+                       165
+                       166     end
+ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 13, WARNING: This ORG has lower value than the previous one
-Line 107, WARNING: Missing `END' directive
+Line 17, WARNING:ThisORGhaslowervaluethanthepreviousone
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
-??VERSION. . . . . . . . . . . . . .  N  NUMB  0147H  NOT USED
+??VERSION. . . . . . . . . . . . . .  N  NUMB  0149H  NOT USED
 AC . . . . . . . . . . . . . . . . .  B  ADDR  00D6H  NOT USED
 ACC. . . . . . . . . . . . . . . . .  D  ADDR  00E0H  NOT USED
 ACSR . . . . . . . . . . . . . . . .  D  ADDR  0097H  NOT USED
@@ -125,6 +183,7 @@ ADCLK. . . . . . . . . . . . . . . .  D  ADDR  00F2H  NOT USED
 ADCON. . . . . . . . . . . . . . . .  D  ADDR  00F3H  NOT USED
 ADDH . . . . . . . . . . . . . . . .  D  ADDR  00F5H  NOT USED
 ADDL . . . . . . . . . . . . . . . .  D  ADDR  00F4H  NOT USED
+AKTIVERSPIELER . . . . . . . . . . .  N  NUMB  0018H
 AUXR . . . . . . . . . . . . . . . .  D  ADDR  008EH  NOT USED
 AUXR1. . . . . . . . . . . . . . . .  D  ADDR  00A2H  NOT USED
 B. . . . . . . . . . . . . . . . . .  D  ADDR  00F0H  NOT USED
@@ -169,7 +228,7 @@ CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
-DISPLAY. . . . . . . . . . . . . . .  C  ADDR  0059H
+DISPLAY. . . . . . . . . . . . . . .  C  ADDR  005EH
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -179,6 +238,10 @@ DPL. . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 EA . . . . . . . . . . . . . . . . .  B  ADDR  00AFH  NOT USED
 EC . . . . . . . . . . . . . . . . .  B  ADDR  00AEH  NOT USED
 EECON. . . . . . . . . . . . . . . .  D  ADDR  0096H  NOT USED
+EINFUEGEN. . . . . . . . . . . . . .  C  ADDR  00DEH
+EINGABEBEREIT. . . . . . . . . . . .  N  NUMB  0000H
+EINGABE_ABFRAGEN . . . . . . . . . .  C  ADDR  00BFH
+EINGABE_FERTIG . . . . . . . . . . .  C  ADDR  00E5H
 ES . . . . . . . . . . . . . . . . .  B  ADDR  00ACH  NOT USED
 ET0. . . . . . . . . . . . . . . . .  B  ADDR  00A9H  NOT USED
 ET1. . . . . . . . . . . . . . . . .  B  ADDR  00ABH  NOT USED
@@ -209,15 +272,15 @@ KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
 KEYPAD . . . . . . . . . . . . . . .  N  NUMB  00A0H  NOT USED
-LOOP . . . . . . . . . . . . . . . .  C  ADDR  003CH
+LOOP . . . . . . . . . . . . . . . .  C  ADDR  003FH
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
-P0 . . . . . . . . . . . . . . . . .  D  ADDR  0080H
-P1 . . . . . . . . . . . . . . . . .  D  ADDR  0090H
+P0 . . . . . . . . . . . . . . . . .  D  ADDR  0080H  NOT USED
+P1 . . . . . . . . . . . . . . . . .  D  ADDR  0090H  NOT USED
 P1M1 . . . . . . . . . . . . . . . .  D  ADDR  00D4H  NOT USED
 P1M2 . . . . . . . . . . . . . . . .  D  ADDR  00E2H  NOT USED
-P2 . . . . . . . . . . . . . . . . .  D  ADDR  00A0H  NOT USED
+P2 . . . . . . . . . . . . . . . . .  D  ADDR  00A0H
 P3 . . . . . . . . . . . . . . . . .  D  ADDR  00B0H  NOT USED
 P3M1 . . . . . . . . . . . . . . . .  D  ADDR  00D5H  NOT USED
 P3M2 . . . . . . . . . . . . . . . .  D  ADDR  00E3H  NOT USED
@@ -270,8 +333,8 @@ SPCON. . . . . . . . . . . . . . . .  D  ADDR  00C3H  NOT USED
 SPCR . . . . . . . . . . . . . . . .  D  ADDR  00D5H  NOT USED
 SPDAT. . . . . . . . . . . . . . . .  D  ADDR  00C5H  NOT USED
 SPDR . . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
-SPIELER1 . . . . . . . . . . . . . .  N  NUMB  0020H
-SPIELER2 . . . . . . . . . . . . . .  N  NUMB  0028H
+SPIELER1 . . . . . . . . . . . . . .  N  NUMB  0038H
+SPIELER2 . . . . . . . . . . . . . .  N  NUMB  0040H
 SPIELER2AKTIV. . . . . . . . . . . .  N  NUMB  0030H
 SPSR . . . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
 SPSTA. . . . . . . . . . . . . . . .  D  ADDR  00C4H  NOT USED
@@ -289,13 +352,13 @@ TH0. . . . . . . . . . . . . . . . .  D  ADDR  008CH
 TH1. . . . . . . . . . . . . . . . .  D  ADDR  008DH  NOT USED
 TH2. . . . . . . . . . . . . . . . .  D  ADDR  00CDH  NOT USED
 TI . . . . . . . . . . . . . . . . .  B  ADDR  0099H  NOT USED
-TIMER. . . . . . . . . . . . . . . .  C  ADDR  003FH
+TIMER. . . . . . . . . . . . . . . .  C  ADDR  0044H
 TIMER0 . . . . . . . . . . . . . . .  C  ADDR  000BH  NOT USED
 TIMER1 . . . . . . . . . . . . . . .  C  ADDR  001BH  NOT USED
 TIMER2 . . . . . . . . . . . . . . .  C  ADDR  002BH  NOT USED
-TIMER_DISPLAY. . . . . . . . . . . .  C  ADDR  0045H
-TIMER_SPIELER2 . . . . . . . . . . .  C  ADDR  0049H
-TIMER_SPIELER2_AN. . . . . . . . . .  C  ADDR  0054H
+TIMER_DISPLAY. . . . . . . . . . . .  C  ADDR  004AH
+TIMER_SPIELER2 . . . . . . . . . . .  C  ADDR  004EH
+TIMER_SPIELER2_AN. . . . . . . . . .  C  ADDR  0059H
 TL0. . . . . . . . . . . . . . . . .  D  ADDR  008AH
 TL1. . . . . . . . . . . . . . . . .  D  ADDR  008BH  NOT USED
 TL2. . . . . . . . . . . . . . . . .  D  ADDR  00CCH  NOT USED
@@ -304,6 +367,7 @@ TR0. . . . . . . . . . . . . . . . .  B  ADDR  008CH
 TR1. . . . . . . . . . . . . . . . .  B  ADDR  008EH  NOT USED
 TR2. . . . . . . . . . . . . . . . .  B  ADDR  00CAH  NOT USED
 TXD. . . . . . . . . . . . . . . . .  B  ADDR  00B1H  NOT USED
+VERGLEICH. . . . . . . . . . . . . .  C  ADDR  00C8H
 WDTCON . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTPRG . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTRST . . . . . . . . . . . . . . .  D  ADDR  00A6H  NOT USED
