@@ -35,18 +35,11 @@ JMP loop
 
 ; timer wird vom Timer-Interrupt gemerufen. Es inkrementiert den Counter in R7. Nach einer gewissen Zahl von Takten wird das Display angezeigt. Wird das Display angezeigt, wird in R6 inkrementiert, um bei jedem x-ten Aufruf Spieler 2 zu toggeln
 timer:
-INC R6
-MOV A, R6
-SUBB A, #04h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 4 größer als A
-JNC timer_show
-RET
-timer_show:
 INC R7
 MOV A, R7
-SUBB A, #02h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 2 größer als A
+SUBB A, #01h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 1 größer als A
 JNC timer_spieler2
 timer_display:
-MOV R6, #00h
 CALL display
 RET
 timer_spieler2:

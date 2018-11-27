@@ -28,7 +28,7 @@ viergewinnt                                                                     
 0030 758AC0             26     mov tl0, #0c0h
 0033 758CC0             27     mov th0, #0c0h
 0036 D28C               28     setb tr0
-0038 120062             29     call display
+0038 120059             29     call display
 003B C3                 30     clr C
                         31
                         32     loop:
@@ -37,89 +37,82 @@ viergewinnt                                                                     
                         35
                         36     ; timer wird vom Timer-Interrupt gemerufen. Es inkrementiert den Counter in R7. Nach einer gewissen Z
                         37     timer:
-003F 0E                 38     INC R6
-0040 EE                 39     MOV A, R6
-0041 9404               40     SUBB A, #04h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 4 größer als A
-0043 5001               41     JNC timer_show
-0045 22                 42     RET
-                        43     timer_show:
-0046 0F                 44     INC R7
-0047 EF                 45     MOV A, R7
-0048 9402               46     SUBB A, #02h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 2 größer als A
-004A 5006               47     JNC timer_spieler2
-                        48     timer_display:
-004C 7E00               49     MOV R6, #00h
-004E 120062             50     CALL display
-0051 22                 51     RET
-                        52     timer_spieler2:
-0052 7F00               53     MOV R7, #00h
-0054 E530               54     MOV A, SPIELER2AKTIV
-0056 6005               55     JZ timer_spieler2_an ; Wenn akku Inhalt = SPIELER2AKTIV gleich 0
-0058 753000             56     MOV SPIELER2AKTIV, #00h
-005B 80EF               57     JMP timer_display
-                        58     timer_spieler2_an:
-005D 7530FF             59     MOV SPIELER2AKTIV, #0FFh
-0060 80EA               60     JMP timer_display
-                        61
-                        62
-                        63     ; Display gibt das Spielbrett aus. Falls in SPIELER2AKTIV FFh steht, werden beide Zustände ausgegeben
-                        64     display:
-0062 E530               65     MOV A, SPIELER2AKTIV
-0064 5528               66     ANL A, SPIELER2
-0066 4520               67     ORL A, SPIELER1
-0068 F580               68     MOV COLS, A
-006A D290               69     SETB ROWS.0
-006C C290               70     CLR ROWS.0
-006E E530               71     MOV A, SPIELER2AKTIV
-0070 5529               72     ANL A, SPIELER2 + 1
-0072 4521               73     ORL A, SPIELER1 + 1
-0074 F580               74     MOV COLS, A
-0076 D291               75     SETB ROWS.1
-0078 C291               76     CLR ROWS.1
-007A E530               77     MOV A, SPIELER2AKTIV
-007C 552A               78     ANL A, SPIELER2 + 2
-007E 4522               79     ORL A, SPIELER1 + 2
-0080 F580               80     MOV COLS, A
-0082 D292               81     SETB ROWS.2
-0084 C292               82     CLR ROWS.2
-0086 E530               83     MOV A, SPIELER2AKTIV
-0088 552B               84     ANL A, SPIELER2 + 3
-008A 4523               85     ORL A, SPIELER1 + 3
-008C F580               86     MOV COLS, A
-008E D293               87     SETB ROWS.3
-0090 C293               88     CLR ROWS.3
-0092 E530               89     MOV A, SPIELER2AKTIV
-0094 552C               90     ANL A, SPIELER2 + 4
-0096 4524               91     ORL A, SPIELER1 + 4
-0098 F580               92     MOV COLS, A
-009A D294               93     SETB ROWS.4
-009C C294               94     CLR ROWS.4
-009E E530               95     MOV A, SPIELER2AKTIV
-00A0 552D               96     ANL A, SPIELER2 + 5
-00A2 4525               97     ORL A, SPIELER1 + 5
-00A4 F580               98     MOV COLS, A
-00A6 D295               99     SETB ROWS.5
-00A8 C295              100     CLR ROWS.5
-00AA E530              101     MOV A, SPIELER2AKTIV
-00AC 552E              102     ANL A, SPIELER2 + 6
-00AE 4526              103     ORL A, SPIELER1 + 6
-00B0 F580              104     MOV COLS, A
-00B2 D296              105     SETB ROWS.6
-00B4 C296              106     CLR ROWS.6
-00B6 E530              107     MOV A, SPIELER2AKTIV
-00B8 552F              108     ANL A, SPIELER2 + 7
-00BA 4527              109     ORL A, SPIELER1 + 7
-00BC F580              110     MOV COLS, A
-00BE D297              111     SETB ROWS.7
-00C0 C297              112     CLR ROWS.7
-00C2 22                113     RET
+003F 0F                 38     INC R7
+0040 EF                 39     MOV A, R7
+0041 9401               40     SUBB A, #01h ; Wenn bei der Subtraktion das Carry-Bit gesetzt wird, ist 1 größer als A
+0043 5004               41     JNC timer_spieler2
+                        42     timer_display:
+0045 120059             43     CALL display
+0048 22                 44     RET
+                        45     timer_spieler2:
+0049 7F00               46     MOV R7, #00h
+004B E530               47     MOV A, SPIELER2AKTIV
+004D 6005               48     JZ timer_spieler2_an ; Wenn akku Inhalt = SPIELER2AKTIV gleich 0
+004F 753000             49     MOV SPIELER2AKTIV, #00h
+0052 80F1               50     JMP timer_display
+                        51     timer_spieler2_an:
+0054 7530FF             52     MOV SPIELER2AKTIV, #0FFh
+0057 80EC               53     JMP timer_display
+                        54
+                        55
+                        56     ; Display gibt das Spielbrett aus. Falls in SPIELER2AKTIV FFh steht, werden beide Zustände ausgegeben
+                        57     display:
+0059 E530               58     MOV A, SPIELER2AKTIV
+005B 5528               59     ANL A, SPIELER2
+005D 4520               60     ORL A, SPIELER1
+005F F580               61     MOV COLS, A
+0061 D290               62     SETB ROWS.0
+0063 C290               63     CLR ROWS.0
+0065 E530               64     MOV A, SPIELER2AKTIV
+0067 5529               65     ANL A, SPIELER2 + 1
+0069 4521               66     ORL A, SPIELER1 + 1
+006B F580               67     MOV COLS, A
+006D D291               68     SETB ROWS.1
+006F C291               69     CLR ROWS.1
+0071 E530               70     MOV A, SPIELER2AKTIV
+0073 552A               71     ANL A, SPIELER2 + 2
+0075 4522               72     ORL A, SPIELER1 + 2
+0077 F580               73     MOV COLS, A
+0079 D292               74     SETB ROWS.2
+007B C292               75     CLR ROWS.2
+007D E530               76     MOV A, SPIELER2AKTIV
+007F 552B               77     ANL A, SPIELER2 + 3
+0081 4523               78     ORL A, SPIELER1 + 3
+0083 F580               79     MOV COLS, A
+0085 D293               80     SETB ROWS.3
+0087 C293               81     CLR ROWS.3
+0089 E530               82     MOV A, SPIELER2AKTIV
+008B 552C               83     ANL A, SPIELER2 + 4
+008D 4524               84     ORL A, SPIELER1 + 4
+008F F580               85     MOV COLS, A
+0091 D294               86     SETB ROWS.4
+0093 C294               87     CLR ROWS.4
+0095 E530               88     MOV A, SPIELER2AKTIV
+0097 552D               89     ANL A, SPIELER2 + 5
+0099 4525               90     ORL A, SPIELER1 + 5
+009B F580               91     MOV COLS, A
+009D D295               92     SETB ROWS.5
+009F C295               93     CLR ROWS.5
+00A1 E530               94     MOV A, SPIELER2AKTIV
+00A3 552E               95     ANL A, SPIELER2 + 6
+00A5 4526               96     ORL A, SPIELER1 + 6
+00A7 F580               97     MOV COLS, A
+00A9 D296               98     SETB ROWS.6
+00AB C296               99     CLR ROWS.6
+00AD E530              100     MOV A, SPIELER2AKTIV
+00AF 552F              101     ANL A, SPIELER2 + 7
+00B1 4527              102     ORL A, SPIELER1 + 7
+00B3 F580              103     MOV COLS, A
+00B5 D297              104     SETB ROWS.7
+00B7 C297              105     CLR ROWS.7
+00B9 22                106     RET
 ****WARNING: Missing `END' directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 2 WARNINGS
 
 
 ERROR SUMMARY:
 Line 13, WARNING: This ORG has lower value than the previous one
-Line 114, WARNING: Missing `END' directive
+Line 107, WARNING: Missing `END' directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -176,7 +169,7 @@ CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
 CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
-DISPLAY. . . . . . . . . . . . . . .  C  ADDR  0062H
+DISPLAY. . . . . . . . . . . . . . .  C  ADDR  0059H
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -300,10 +293,9 @@ TIMER. . . . . . . . . . . . . . . .  C  ADDR  003FH
 TIMER0 . . . . . . . . . . . . . . .  C  ADDR  000BH  NOT USED
 TIMER1 . . . . . . . . . . . . . . .  C  ADDR  001BH  NOT USED
 TIMER2 . . . . . . . . . . . . . . .  C  ADDR  002BH  NOT USED
-TIMER_DISPLAY. . . . . . . . . . . .  C  ADDR  004CH
-TIMER_SHOW . . . . . . . . . . . . .  C  ADDR  0046H
-TIMER_SPIELER2 . . . . . . . . . . .  C  ADDR  0052H
-TIMER_SPIELER2_AN. . . . . . . . . .  C  ADDR  005DH
+TIMER_DISPLAY. . . . . . . . . . . .  C  ADDR  0045H
+TIMER_SPIELER2 . . . . . . . . . . .  C  ADDR  0049H
+TIMER_SPIELER2_AN. . . . . . . . . .  C  ADDR  0054H
 TL0. . . . . . . . . . . . . . . . .  D  ADDR  008AH
 TL1. . . . . . . . . . . . . . . . .  D  ADDR  008BH  NOT USED
 TL2. . . . . . . . . . . . . . . . .  D  ADDR  00CCH  NOT USED
