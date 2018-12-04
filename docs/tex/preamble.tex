@@ -93,3 +93,38 @@
 \usepackage[framemethod=tikz]{mdframed} % Boxen für die Umrandung
 
 \setlength{\parskip}{\baselineskip} % Abstand zwischen Paragraphen - Noch mehr Seiten ercheaten ;-)
+
+
+% Für Zeichungen (FlowCharts, Automaten, ...)
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+% Highlight-Boxen
+% ---- Grundsätzliche Definition zum Style
+\newtheoremstyle{defi}
+  {\topsep}         % Abstand oben
+  {\topsep}         % Abstand unten
+  {\normalfont}     % Schrift des Bodys
+  {0pt}             % Einschub der ersten Zeile
+  {\bfseries}       % Darstellung von der Schrift in der Überschrift
+  {:}               % Trennzeichen zwischen Überschrift und Body
+  {.5em}            % Abstand nach dem Trennzeichen zum Body Text
+  {\thmname{#3}}    % Name in eckigen Klammern
+\theoremstyle{defi}
+
+% ------ Definition zum Strich vor eines Texts
+\newmdtheoremenv[
+  hidealllines = true,       % Rahmen komplett ausblenden
+  leftline = true,           % Linie links einschalten
+  innertopmargin = 8pt,      % Abstand oben
+  innerbottommargin = 4pt,   % Abstand unten
+  innerrightmargin = 0pt,    % Abstand rechts
+  linewidth = 3pt,           % Linienbreite
+  linecolor = gray!40,       % Linienfarbe
+]{defStrich}{Definition}     % Name der des formats "defStrich"
