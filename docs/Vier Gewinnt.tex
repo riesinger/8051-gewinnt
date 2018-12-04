@@ -79,10 +79,10 @@ Was sollen wir denn Analysieren?
 \section{Programmentwurf}
 
 % TODO: Irgendwo "eingabebereit" erklären
-Der Programmfluss, wie er in \autoref{fig:programmfluss} dargestellt ist, beschreibt die Hauptschleife des Programmes.
-In der Initialisierung, wird nach dem Start des Simulators der benötigte Speicher zurückgesetzt, Spieler 1 als aktiver Spieler ausgewählt und der Timer gestartet - danach beginnt die Hauptschleife.
-In ihr wird wiederholt abgefragt, ob aktuell eine Eingabe getätigt werden kann.
-Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktuellen Spieler. Wurde diese ausgeführt, wird anhand des Zuges überprüft, ob der Spieler es geschafft hat 4 Steine nebeneinander zu setzen. Ist dies der Fall, hat er gewonnen - andernfalls kommt es zum Spielerwechsel und die Hauptschleife beginnt vom Neuen.
+Der Programmfluss, wie er in \autoref{fig:programmfluss} dargestellt ist, beschreibt den Ablauf des Programms.\\
+Nach dem Start des Simulators beginnt die Initialisierung des Programms - der benötigte Speicher wird zurückgesetzt, Spieler 1 als aktiver Spieler ausgewählt und der Timer gestartet. Danach beginnt die Hauptschleife.\\
+In ihr wird wiederholt abgefragt, ob aktuell eine Eingabe getätigt werden kann - also, ob das Keypad vollständig auf false gestellt wurde.
+Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktiven Spieler. Wurde diese ausgeführt, wird anhand des Zuges überprüft, ob der Spieler es geschafft hat 4 Steine nebeneinander zu setzen. Ist dies der Fall, hat er gewonnen - andernfalls kommt es zum Spielerwechsel und die Hauptschleife beginnt von Neuem.
 
 \begin{figure}
 	\centering \tiny
