@@ -12,11 +12,18 @@ SPIELER2AKTIV EQU 030h
 
 ; SHOW_ROW legt den aktuellen Spielstand der übergebenen Zeile auf P0 an.
 ; Dabei wird der Spielstand von Spieler 2 durch blinken dargestellt (SPIELER2AKTIV = #0ffb)
-SHOW_ROW  MACRO row ; 
+SHOW_ROW  MACRO row
 	MOV A, SPIELER2AKTIV
 	ANL A, SPIELER2 + row
 	ORL A, SPIELER1 + row
 	MOV COLS, A
+ENDM
+
+CMP_HORIZ MACRO num
+	mov a, R1
+	subb a, num
+	jc spielstand_horiz_exit
+	jz win
 ENDM
 
 cseg at 0h
@@ -125,7 +132,6 @@ jnb eingabebereit, eingabe_fertig
 mov r2, #07h
 
 vergleich:
-
 mov a, #SPIELER1
 add a, r2
 mov r0, a
@@ -182,18 +188,39 @@ ret
 
 spielstand_horiz:
 ; Wenn aktueller Spieler 4 horizontal nebeneinander hat
-;jmp win
+; Für jede Zeile >= 127 auf = 127 testen und dann bis 4 mal nach rechts shiften
+; Ist die Zeile 127, dann sind 4 Steine nebeneinander => Win
+
+mov R5, #7d
+
+mov a, aktiverspieler
+add a, R5
+mov R0, a
+mov a, @R0
+mov R1, a
+
+CMP_HORIZ #15d
+CMP_HORIZ #30d
+CMP_HORIZ #60d
+CMP_HORIZ #120d
+CMP_HORIZ #240d
+
+spielstand_horiz_exit:
 ret
 
 spielstand_vert:
 ; Wenn aktueller Spieler 4 vertikal übereinander hat
+; 8 Bytes auf 0 setzen
+; Wenn bit1 gesetzt -> erstes Byte um 1 erhöhen
+; Wenn bitn gesetzt -> ntes Byte um 1 erhöhen
+; Wenn ein Byte = 4 => Win
 ;jmp win
 ret
 
 win:
 ; Spieler1 = Leer
 ; Spieler2 = Darstellen einer '1' oder '2'
-;jmp leerlauf
+jmp leerlauf
 
 leerlauf:
 jmp leerlauf
