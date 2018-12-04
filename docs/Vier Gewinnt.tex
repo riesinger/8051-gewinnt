@@ -1,4 +1,5 @@
 \input{tex/preamble.tex}
+
 \begin{document}
 
 \newcommand{\autor}{Heidinger, Matthis, Riesinger, Stephan}
@@ -13,11 +14,24 @@
 
 \section{Motivation}
 
-Eine gute Note
+Mit dem 8051 ist ein relativ einfacher Einstieg in die Assemblerprogrammierung möglich. Assembler ist sehr maschinennah und bietet aus diesem Grund 
+nicht die Annehmlichkeiten, die beispielsweise objektorienterte Programmiersprachen wie Java mitsich bringen.\\
+An einem Simulator lässt sich gefahrlos erproben, wie mit Pointern und sehr begrenztem Speicherplatz umzugehen ist.\\
+durch die andere Herangehensweise an ansonsten vertraute Programmierstrukturen wie zum Beispiel Vergleichen, die nun mit Jump-Befehlen und negativen
+Vergleichen implementiert werden müssen, wird das logische Denkvermögen geschult.
 
 \section{Aufgabenstellung}
 
-\enquote{Macht mal was}
+Es soll ein Spiel nach dem bekannten Spielkonzept von \glqq 4-Gewinnt\grqq{} in Assembler auf dem 8051 entwickelt und 
+implementiert werden.\\
+Dafür wird für die Visualisierung der Spielfläche eine entsprechende Hardware gewählt, 
+auf der die Spielstände der beiden Spieler angezeigt werden (Output). Die Auswahl der Spalte, in der ein 
+\glqq Spielstein\grqq{} platziert werden soll, muss ebenfalls über eine entsprechende Hardware gelöst werden (Input).\\
+Die beiden Spieler müssen damit in der Lage sein, abwechselnd sogenannte Spielsteine in selbst ausgewählte Spalten zu werfen, 
+welche dann am oberen Ende des Stapels angefügt werden. Hat ein Spieler es geschafft, 4 seiner Spielsteine hintereinander 
+in eine Reihe oder Spalte zu bringen, hat er gewonnen.\\
+Dabei soll sicher gestellt sein, das nicht mehr Spielsteine in eine Spalte geschmissen werden als Platz ist. Auch wichtig ist, dass die Spielsteine
+der beiden Spieler klar voneinander zu unterscheiden sein müssen, damit es nicht zu Verwechslungen kommen kann. 
 
 \chapter{Grundlagen}
 
