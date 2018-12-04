@@ -80,21 +80,21 @@ Was sollen wir denn Analysieren?
 
 % TODO: Irgendwo "eingabebereit" erklären
 Der Programmfluss, wie er in \autoref{fig:programmfluss} dargestellt ist, beschreibt die Hauptschleife des Programmes.
-Nach einer Initialisierung, in welcher benötigte Speicher zurückgesetzt werden und der Timer gestartet wird, startet die Hauptschleife.
+In der Initialisierung, wird nach dem Start des Simulators der benötigte Speicher zurückgesetzt, Spieler 1 als aktiver Spieler ausgewählt und der Timer gestartet - danach beginnt die Hauptschleife.
 In ihr wird wiederholt abgefragt, ob aktuell eine Eingabe getätigt werden kann.
-Falls ja wird diese eingelesen und ausgewertet.
-Anschließend wird überprüft, ob der aktuelle Spieler gewonnen hat, indem er 4 Steine nebeneinander gesetzt hat.
-Ist dies der Fall endet das Spiel. Andernfalls wird der aktive Spieler gewechselt und die Schleife wird erneut ausgeführt.
+Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktuellen Spieler. Wurde diese ausgeführt, wird anhand des Zuges überprüft, ob der Spieler es geschafft hat 4 Steine nebeneinander zu setzen. Ist dies der Fall, hat er gewonnen - andernfalls kommt es zum Spielerwechsel und die Hauptschleife beginnt vom Neuen.
 
 \begin{figure}
-	\centering
-  \begin{tikzpicture}[node distance=2cm]
+	\centering \tiny
+  \begin{tikzpicture}[node distance=1.5cm]
     \node (start) [startstop] {Start};
-    \node (init) [process, below of=start] {Init};
-    \node (mainloop) [process, below of=init] {Schleife};
-    \node (readyforinput) [decision, below of=mainloop, yshift=-1.5cm] {Eingabebereit?};
-    \node (getinput) [process, below of=readyforinput, yshift=-1.5cm] {Eingabe abfragen};
-    \node (checkwin) [decision, below of=getinput, yshift=-1cm] {Gewonnen?};
+    \node (init) [process, below of=start] {Initialisierung};
+    \node (mainloop) [process, below of=init] {Eingabepad prüfen};
+    \node (readyforinput) [decision, below of=mainloop, yshift=-1.0cm] {Eingabe zurückgesetzt?};
+    \node (getinput) [process, below of=readyforinput, yshift=-1.0cm] {Eingabepad prüfen};
+    \node (checkplayerdecision) [decision, below of=getinput, yshift=-1.0cm] {Eingabe gesetzt?};
+    \node (checkturn) [process, below of=checkplayerdecision, yshift=-1.0cm] {Matrix prüfen};
+    \node (checkwin) [decision, below of=checkturn, yshift=-1cm] {Gewonnen?};
     \node (switchplayers) [process, right of=checkwin, xshift=4cm] {Spieler wechseln};
     \node (end) [startstop, below of=checkwin, yshift=-1cm] {Ende};
     \draw [arrow] (start) -- (init);
@@ -102,7 +102,10 @@ Ist dies der Fall endet das Spiel. Andernfalls wird der aktive Spieler gewechsel
     \draw [arrow] (mainloop) -- (readyforinput);
     \draw [arrow] (readyforinput) -- node[anchor=west] {ja} (getinput);
     \draw [arrow] (readyforinput) -- node[anchor=south] {nein} (readyforinput-|switchplayers.west) |- ([yshift=8pt]mainloop.south east);
-    \draw [arrow] (getinput) -- (checkwin);
+    \draw [arrow] (getinput) -- (checkplayerdecision);
+    \draw [arrow] (checkplayerdecision) -- node[anchor=south] {nein} (checkplayerdecision-|switchplayers.west) |- ([yshift=8pt]getinput.south east);
+    \draw [arrow] (checkplayerdecision) -- node[anchor=west] {ja} (checkturn);
+    \draw [arrow] (checkturn) -- (checkwin);
     \draw [arrow] (checkwin) -- node[anchor=south] {nein} (switchplayers);
     \draw [arrow] (checkwin) -- node[anchor=west] {ja} (end);
     \draw [arrow] (switchplayers) |- ([yshift=-8pt]mainloop.north east);
