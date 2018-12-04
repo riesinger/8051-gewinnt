@@ -10,6 +10,22 @@ SPIELER1 EQU 038h
 SPIELER2 EQU 040h
 SPIELER2AKTIV EQU 030h
 
+; SHOW_ROW legt den aktuellen Spielstand der übergebenen Zeile auf P0 an.
+; Dabei wird der Spielstand von Spieler 2 durch blinken dargestellt (SPIELER2AKTIV = #0ffb)
+SHOW_ROW  MACRO row
+	MOV A, SPIELER2AKTIV
+	ANL A, SPIELER2 + row
+	ORL A, SPIELER1 + row
+	MOV COLS, A
+ENDM
+
+CMP_HORIZ MACRO num
+	mov a, R1
+	subb a, num
+	jc spielstand_horiz_exit
+	jz win
+ENDM
+
 cseg at 0h
 ajmp init
 cseg at 100h
@@ -41,6 +57,7 @@ loop:
 ; Eingabe abfragen
 call eingabe_abfragen
 ; Spielstand aktualisieren
+call spielstand
 
 JMP loop
 
@@ -73,52 +90,28 @@ JMP timer_display
 
 ; Display gibt das Spielbrett aus. Falls in SPIELER2AKTIV FFh steht, werden beide Zustände ausgegeben
 display:
-MOV A, SPIELER2AKTIV
-ANL A, SPIELER2
-ORL A, SPIELER1
-MOV COLS, A
+SHOW_ROW 0
 SETB ROWS.0
 CLR ROWS.0
-MOV A, SPIELER2AKTIV
-ANL A, SPIELER2 + 1
-ORL A, SPIELER1 + 1
-MOV COLS, A
+SHOW_ROW 1
 SETB ROWS.1
 CLR ROWS.1
-MOV A, SPIELER2AKTIV
-ANL A, SPIELER2 + 2
-ORL A, SPIELER1 + 2
-MOV COLS, A
+SHOW_ROW 2
 SETB ROWS.2
 CLR ROWS.2
-MOV A, SPIELER2AKTIV
-ANL A, SPIELER2 + 3
-ORL A, SPIELER1 + 3
-MOV COLS, A
+SHOW_ROW 3
 SETB ROWS.3
 CLR ROWS.3
-MOV A, SPIELER2AKTIV
-ANL A, SPIELER2 + 4
-ORL A, SPIELER1 + 4
-MOV COLS, A
+SHOW_ROW 4
 SETB ROWS.4
 CLR ROWS.4
-MOV A, SPIELER2AKTIV
-ANL A, SPIELER2 + 5
-ORL A, SPIELER1 + 5
-MOV COLS, A
+SHOW_ROW 5
 SETB ROWS.5
 CLR ROWS.5
-MOV A, SPIELER2AKTIV
-ANL A, SPIELER2 + 6
-ORL A, SPIELER1 + 6
-MOV COLS, A
+SHOW_ROW 6
 SETB ROWS.6
 CLR ROWS.6
-MOV A, SPIELER2AKTIV
-ANL A, SPIELER2 + 7
-ORL A, SPIELER1 + 7
-MOV COLS, A
+SHOW_ROW 7
 SETB ROWS.7
 CLR ROWS.7
 RET
@@ -139,7 +132,6 @@ jnb eingabebereit, eingabe_fertig
 mov r2, #07h
 
 vergleich:
-
 mov a, #SPIELER1
 add a, r2
 mov r0, a
@@ -188,5 +180,49 @@ ret
 spieler_zwei:
 mov AKTIVERSPIELER, #SPIELER1
 ret
+
+spielstand:
+call spielstand_horiz
+call spielstand_vert
+ret
+
+spielstand_horiz:
+; Wenn aktueller Spieler 4 horizontal nebeneinander hat
+; Für jede Zeile >= 127 auf = 127 testen und dann bis 4 mal nach rechts shiften
+; Ist die Zeile 127, dann sind 4 Steine nebeneinander => Win
+
+mov R5, #7d
+
+mov a, aktiverspieler
+add a, R5
+mov R0, a
+mov a, @R0
+mov R1, a
+
+CMP_HORIZ #15d
+CMP_HORIZ #30d
+CMP_HORIZ #60d
+CMP_HORIZ #120d
+CMP_HORIZ #240d
+
+spielstand_horiz_exit:
+ret
+
+spielstand_vert:
+; Wenn aktueller Spieler 4 vertikal übereinander hat
+; 8 Bytes auf 0 setzen
+; Wenn bit1 gesetzt -> erstes Byte um 1 erhöhen
+; Wenn bitn gesetzt -> ntes Byte um 1 erhöhen
+; Wenn ein Byte = 4 => Win
+;jmp win
+ret
+
+win:
+; Spieler1 = Leer
+; Spieler2 = Darstellen einer '1' oder '2'
+jmp leerlauf
+
+leerlauf:
+jmp leerlauf
 
 end
