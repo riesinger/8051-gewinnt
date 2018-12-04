@@ -163,6 +163,8 @@ mov a, @r0
 orl a, r3
 mov @r0, a
 
+call spielstand
+
 clr EINGABEBEREIT
 call spieler_wechseln
 ret
