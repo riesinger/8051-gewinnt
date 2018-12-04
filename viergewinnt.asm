@@ -50,6 +50,7 @@ loop:
 ; Eingabe abfragen
 call eingabe_abfragen
 ; Spielstand aktualisieren
+call spielstand
 
 JMP loop
 
@@ -173,5 +174,28 @@ ret
 spieler_zwei:
 mov AKTIVERSPIELER, #SPIELER1
 ret
+
+spielstand:
+call spielstand_horiz
+call spielstand_vert
+ret
+
+spielstand_horiz:
+; Wenn aktueller Spieler 4 horizontal nebeneinander hat
+;jmp win
+ret
+
+spielstand_vert:
+; Wenn aktueller Spieler 4 vertikal übereinander hat
+;jmp win
+ret
+
+win:
+; Spieler1 = Leer
+; Spieler2 = Darstellen einer '1' oder '2'
+;jmp leerlauf
+
+leerlauf:
+jmp leerlauf
 
 end
