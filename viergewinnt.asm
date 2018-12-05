@@ -289,7 +289,26 @@ DISPLAY_DB 7
 jmp leerlauf
 
 leerlauf:
-jmp leerlauf
+mov a, p2
+cpl a
+cjne a, #10000001b, leerlauf
+jmp neustart
+
+neustart:
+; Spieler2 = Leer
+mov SPIELER2, #00h
+mov SPIELER2+1, #00h
+mov SPIELER2+2, #00h
+mov SPIELER2+3, #00h
+mov SPIELER2+4, #00h
+mov SPIELER2+5, #00h
+mov SPIELER2+6, #00h
+mov SPIELER2+7, #00h
+
+; Nach reset wird auf leere Eingabe gewartet
+clr EINGABEBEREIT
+mov AKTIVERSPIELER, #SPIELER2
+ret
 
 ; Datenbankeintrag für '1'
 display_1:
