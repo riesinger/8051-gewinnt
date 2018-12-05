@@ -28,7 +28,7 @@ jz win
 ENDM
 
 DISPLAY_DB MACRO num
-mov a, num
+mov a, #num
 movc a, @a+dptr
 mov spieler2 + num, a
 ENDM
