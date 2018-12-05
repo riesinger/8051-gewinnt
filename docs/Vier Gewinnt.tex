@@ -2,7 +2,7 @@
 
 \begin{document}
 
-\newcommand{\autor}{Heidinger, Matthis, Riesinger, Stephan}
+\newcommand{\autor}{Max Heidinger, Sophia Matthis, Pascal Riesinger, Martin Stephan}
 \newcommand{\kurs}{TINF17B1}
 \newcommand{\titel}{4-Gewinnt auf einem Mikrocomputer der 8051-Famile}
 
@@ -69,34 +69,42 @@ Auch technisch war der 8051 zu damaligen Zeiten hochmodern, was man folgenden Ec
 
 \chapter{Konzept}
 
-Wir machen ein 4-Gewinnt
+Entwickelt werden soll ein 4-Gewinnt Spiel für zwei Spieler.
+Die Ausgabe soll auf einer $8 \cdot 8$ LED-Matrix erfolgen.
+Die Eingabe wird durch 8 Schalter ermöglicht.
 
 \section{Analyse}
 
-Was sollen wir denn Analysieren?
-
+% TODO: Mehr Analysieren
+Da die Entwicklungsumgebung keine mehrfarbige LED-Matrix bereitstellt, werden die Steine des zweiten Spielers durch Blinken von den Steinen des ersten Spielers unterschieden.
 
 \section{Programmentwurf}
 
 % TODO: Irgendwo "eingabebereit" erklären
 Der Programmfluss, wie er in \autoref{fig:programmfluss} dargestellt ist, beschreibt den Ablauf des Programms.\\
 Nach dem Start des Simulators beginnt die Initialisierung des Programms - der benötigte Speicher wird zurückgesetzt, Spieler 1 als aktiver Spieler ausgewählt und der Timer gestartet. Danach beginnt die Hauptschleife.\\
-In ihr wird wiederholt abgefragt, ob aktuell eine Eingabe getätigt werden kann - also, ob das Keypad vollständig auf false gestellt wurde.
-Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktiven Spieler. Wurde diese ausgeführt, wird anhand des Zuges überprüft, ob der Spieler es geschafft hat 4 Steine nebeneinander zu setzen. Ist dies der Fall, hat er gewonnen - andernfalls kommt es zum Spielerwechsel und die Hauptschleife beginnt von Neuem.
+In ihr wird wiederholt abgefragt, ob aktuell eine Eingabe getätigt werden kann -- also, ob das Keypad vollständig auf false gestellt wurde.
+Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktiven Spieler.
+Wurde diese ausgeführt, wird anhand des Zuges überprüft, ob der Spieler es geschafft hat 4 Steine nebeneinander zu setzen.
+Ist dies der Fall, hat er gewonnen - andernfalls kommt es zum Spielerwechsel und die Hauptschleife beginnt von Neuem.
+Sobald ein Spieler gewonnen hat, wird die Spielerzahl des Siegers angezeigt.
+Es besteht die Möglichkeit, ein neues Spiel zu beginnen, indem auf dem Keypad der erste und letzte Taster betätigt werden.
+Dann wird der Spieler gewechselt -- also fängt der Verlierer an -- und das Spiel startet erneut.
 
 \begin{figure}
 	\centering
   \begin{tikzpicture}[node distance=1.5cm]
     \node (start) [startstop] {Start};
     \node (init) [process, below of=start] {Initialisierung};
-    \node (mainloop) [process, below of=init] {Eingabepad prüfen};
+    \node (mainloop) [process, below of=init] {Eingabepad auslesen};
     \node (readyforinput) [decision, below of=mainloop, yshift=-1.0cm] {Eingabe zurückgesetzt?};
-    \node (getinput) [process, below of=readyforinput, yshift=-1.0cm] {Eingabepad prüfen};
+    \node (getinput) [process, below of=readyforinput, yshift=-1.0cm] {Eingabepad auslesen};
     \node (checkplayerdecision) [decision, below of=getinput, yshift=-1.0cm] {Eingabe gesetzt?};
-    \node (checkturn) [process, below of=checkplayerdecision, yshift=-1.0cm] {Matrix prüfen};
+    \node (checkturn) [process, below of=checkplayerdecision, yshift=-1.0cm] {Spielstand aktualisieren};
     \node (checkwin) [decision, below of=checkturn, yshift=-1cm] {Gewonnen?};
     \node (switchplayers) [process, right of=checkwin, xshift=5cm] {Spieler wechseln};
-    \node (end) [startstop, below of=checkwin, yshift=-1cm] {Ende};
+    \node (end) [startstop, below of=checkwin, yshift=-1cm] {Spielende};
+
     \draw [arrow] (start) -- (init);
     \draw [arrow] (init) -- (mainloop);
     \draw [arrow] (mainloop) -- (readyforinput);
@@ -109,6 +117,7 @@ Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktiven Spiele
     \draw [arrow] (checkwin) -- node[anchor=south] {nein} (switchplayers);
     \draw [arrow] (checkwin) -- node[anchor=west] {ja} (end);
     \draw [arrow] (switchplayers) |- ([yshift=-8pt]mainloop.north east);
+    \draw [arrow] (end) -- node[anchor=south] {Reset} (end -| switchplayers.south) -- (switchplayers.south);
   \end{tikzpicture}
 
   \caption{Programmfluss des Spieles}
@@ -117,9 +126,9 @@ Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktiven Spiele
 
 Zusätzlich zu dieser Hauptschleife wird über ein Timerinterrupt regelmäßig eine Routine ausgeführt, welche das aktuelle Spielbrett ausgibt. Dabei werden die vom ersten Spieler gesetzten Steine auf der LED-Matrix durchgängig beleuchtet, während die Steine des zweiten Spielers blinken.
 
-\begin{defStrich}[Hinweis]
+\begin{highlight}[Hinweis]
   Die Wiederholrate, mit welcher die LED-Matrix aktualisiert wird ist zu groß, um den Blinkeffekt sehen zu können. Sie musste allerdings für die Entwicklung im Simulator so stark erhöht werden, da der Simulator deutlich langsamer als die tatsächliche Hardware ist.
-\end{defStrich}
+\end{highlight}
 
 \chapter{Implementation}
 
