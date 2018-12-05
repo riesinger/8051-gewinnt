@@ -13,18 +13,24 @@ SPIELER2AKTIV EQU 030h
 ; SHOW_ROW legt den aktuellen Spielstand der übergebenen Zeile auf P0 an.
 ; Dabei wird der Spielstand von Spieler 2 durch blinken dargestellt (SPIELER2AKTIV = #0ffb)
 SHOW_ROW  MACRO row
-	MOV A, SPIELER2AKTIV
-	ANL A, SPIELER2 + row
-	ORL A, SPIELER1 + row
-	MOV COLS, A
+MOV A, SPIELER2AKTIV
+ANL A, SPIELER2 + row
+ORL A, SPIELER1 + row
+MOV COLS, A
 ENDM
 
 CMP_HORIZ MACRO num
-	mov a, R1
-	clr c
-	subb a, num
-	jc spielstand_horiz_exit
-	jz win
+mov a, R1
+clr c
+subb a, num
+jc spielstand_horiz_exit
+jz win
+ENDM
+
+DISPLAY_DB MACRO num
+mov a, num
+movc a, @a+dptr
+mov spieler2 + num, a
 ENDM
 
 cseg at 0h
@@ -245,10 +251,66 @@ ret
 
 win:
 ; Spieler1 = Leer
+mov SPIELER1, #00h
+mov SPIELER1+1, #00h
+mov SPIELER1+2, #00h
+mov SPIELER1+3, #00h
+mov SPIELER1+4, #00h
+mov SPIELER1+5, #00h
+mov SPIELER1+6, #00h
+mov SPIELER1+7, #00h
 ; Spieler2 = Darstellen einer '1' oder '2'
+mov a, #SPIELER1
+clr c
+subb a, AKTIVERSPIELER ; Wenn C = 1, dann hat Spieler 2 gewonnen und wir müssen eine 2 anzeigen
+jc win_spieler2
+; 1 ausgeben
+mov dptr, #display_1
+DISPLAY_DB 0
+DISPLAY_DB 1
+DISPLAY_DB 2
+DISPLAY_DB 3
+DISPLAY_DB 4
+DISPLAY_DB 5
+DISPLAY_DB 6
+DISPLAY_DB 7
+jmp leerlauf
+; 2 ausgeben
+win_spieler2:
+mov dptr, #display_2
+DISPLAY_DB 0
+DISPLAY_DB 1
+DISPLAY_DB 2
+DISPLAY_DB 3
+DISPLAY_DB 4
+DISPLAY_DB 5
+DISPLAY_DB 6
+DISPLAY_DB 7
 jmp leerlauf
 
 leerlauf:
 jmp leerlauf
+
+; Datenbankeintrag für '1'
+display_1:
+db 00011000b
+db 00111000b
+db 01111000b
+db 00011000b
+db 00011000b
+db 00011000b
+db 00011000b
+db 00111100b
+
+; Datenbankeintrag für '2'
+display_2:
+db 00111100b
+db 01111110b
+db 01100110b
+db 00000110b
+db 00011100b
+db 00111000b
+db 01100000b
+db 01111110b
 
 end
