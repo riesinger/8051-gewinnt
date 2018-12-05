@@ -85,7 +85,7 @@ In ihr wird wiederholt abgefragt, ob aktuell eine Eingabe getätigt werden kann 
 Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktiven Spieler. Wurde diese ausgeführt, wird anhand des Zuges überprüft, ob der Spieler es geschafft hat 4 Steine nebeneinander zu setzen. Ist dies der Fall, hat er gewonnen - andernfalls kommt es zum Spielerwechsel und die Hauptschleife beginnt von Neuem.
 
 \begin{figure}
-	\centering \tiny
+	\centering
   \begin{tikzpicture}[node distance=1.5cm]
     \node (start) [startstop] {Start};
     \node (init) [process, below of=start] {Initialisierung};
@@ -95,7 +95,7 @@ Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktiven Spiele
     \node (checkplayerdecision) [decision, below of=getinput, yshift=-1.0cm] {Eingabe gesetzt?};
     \node (checkturn) [process, below of=checkplayerdecision, yshift=-1.0cm] {Matrix prüfen};
     \node (checkwin) [decision, below of=checkturn, yshift=-1cm] {Gewonnen?};
-    \node (switchplayers) [process, right of=checkwin, xshift=4cm] {Spieler wechseln};
+    \node (switchplayers) [process, right of=checkwin, xshift=5cm] {Spieler wechseln};
     \node (end) [startstop, below of=checkwin, yshift=-1cm] {Ende};
     \draw [arrow] (start) -- (init);
     \draw [arrow] (init) -- (mainloop);
