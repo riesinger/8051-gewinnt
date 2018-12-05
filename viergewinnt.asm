@@ -305,8 +305,6 @@ mov SPIELER2+5, #00h
 mov SPIELER2+6, #00h
 mov SPIELER2+7, #00h
 
-; Nach reset wird spieler gewechselt und auf leere eingabe gewartet
-mov AKTIVERSPIELER, #SPIELER2
 ret ; Von spielstand_vert oder spielstand_horiz, um in normale loop zurückzukehren
 
 ; Datenbankeintrag für '1'
