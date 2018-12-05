@@ -8,30 +8,30 @@
 
 \input{tex/titlepage.tex}
 
-\tableofcontents 
+\tableofcontents
 
 \chapter{Einleitung}
 
 \section{Motivation}
 
-Mit dem 8051 ist ein relativ einfacher Einstieg in die Assemblerprogrammierung möglich. Assembler ist sehr maschinennah und bietet aus diesem Grund 
+Mit dem 8051 ist ein relativ einfacher Einstieg in die Assemblerprogrammierung möglich. Assembler ist sehr maschinennah und bietet aus diesem Grund
 nicht die Annehmlichkeiten, die beispielsweise objektorienterte Programmiersprachen wie Java mit sich bringen.\\
 An einem Simulator lässt sich gefahrlos erproben, wie mit Pointern und sehr begrenztem Speicherplatz umzugehen ist.\\
-durch die andere Herangehensweise an ansonsten vertraute Programmierstrukturen wie zum Beispiel Vergleichen, die nun mit Jump-Befehlen und negativen
+Durch die andere Herangehensweise an ansonsten vertraute Programmierstrukturen wie zum Beispiel Vergleichen, die nun mit Jump-Befehlen und negativen
 Vergleichen implementiert werden müssen, wird das logische Denkvermögen geschult.
 
 \section{Aufgabenstellung}
 
-Es soll ein Spiel nach dem bekannten Spielkonzept von \glqq 4-Gewinnt\grqq{} in Assembler auf dem 8051 entwickelt und 
+Es soll ein Spiel nach dem bekannten Spielkonzept von \glqq 4-Gewinnt\grqq{} in Assembler auf dem 8051 entwickelt und
 implementiert werden.\\
-Dafür wird für die Visualisierung der Spielfläche eine entsprechende Hardware gewählt, 
-auf der die Spielstände der beiden Spieler angezeigt werden (Output). Die Auswahl der Spalte, in der ein 
+Dafür wird für die Visualisierung der Spielfläche eine entsprechende Hardware gewählt,
+auf der die Spielstände der beiden Spieler angezeigt werden (Output). Die Auswahl der Spalte, in der ein
 \glqq Spielstein\grqq{} platziert werden soll, muss ebenfalls über eine entsprechende Hardware gelöst werden (Input).\\
-Die beiden Spieler müssen damit in der Lage sein, abwechselnd sogenannte Spielsteine in selbst ausgewählte Spalten zu werfen, 
-welche dann am oberen Ende des Stapels angefügt werden. Hat ein Spieler es geschafft, 4 seiner Spielsteine hintereinander 
+Die beiden Spieler müssen damit in der Lage sein, abwechselnd sogenannte Spielsteine in selbst ausgewählte Spalten zu werfen,
+welche dann am oberen Ende des Stapels angefügt werden. Hat ein Spieler es geschafft, 4 seiner Spielsteine hintereinander
 in eine Reihe oder Spalte zu bringen, hat er gewonnen.\\
 Dabei soll sicher gestellt sein, das nicht mehr Spielsteine in eine Spalte geschmissen werden als Platz ist. Auch wichtig ist, dass die Spielsteine
-der beiden Spieler klar voneinander zu unterscheiden sein müssen, damit es nicht zu Verwechslungen kommen kann. 
+der beiden Spieler klar voneinander zu unterscheiden sein müssen, damit es nicht zu Verwechslungen kommen kann.
 
 \chapter{Grundlagen}
 
@@ -42,24 +42,24 @@ Assembler ist toll!
 \section{Der 8051 Mikrocomputer}
 
 Die ersten Mikroprozessoren der 8051-Reihe wurden im Jahr 1980 von Intel entwickelt. Es handelt sich dabei um einen direkten Nachfolger der 8048-Familie.
-Die 8051-Familie erfreute sich extrem großer Beliebtheit. So wurden über 250 Familienmitglieder von verschiedensten Herstellern wie Philips, Siemens, AMD, OKI und weiteren gebaut und produziert. Der Höhepunkt der Beliebtheit des 8051 war das Jahr 1995, in welchem diese Mikroprozessorfamilie einen Marktanteil von bis zu 30 Prozent erreichte und täglich mehr als eine Million Prozessoren hergestellt wurden. 
+Die 8051-Familie erfreute sich extrem großer Beliebtheit. So wurden über 250 Familienmitglieder von verschiedensten Herstellern wie Philips, Siemens, AMD, OKI und weiteren gebaut und produziert. Der Höhepunkt der Beliebtheit des 8051 war das Jahr 1995, in welchem diese Mikroprozessorfamilie einen Marktanteil von bis zu 30 Prozent erreichte und täglich mehr als eine Million Prozessoren hergestellt wurden.
 
 Auch technisch war der 8051 zu damaligen Zeiten hochmodern, was man folgenden Eckdaten entnehmen kann:
 \begin{itemize}
-  \item $1,2$ - $18 MHz$ Taktrate, oft werden $12 MHz$ verwendet
-  \item 4 kByte ROM
-  \item 128 Byte RAM
-  \item 4 8-Bit Eingabe- und Ausgabeports
-  \item 2 16-Bit Zähler beziehungsweise Zeitgeber
-  \item Eine USART-Schnittstelle
-  \item 5 Interruptquellen
-  \item Bei einer Taktrate von $12 MHz$ laufen
-    \begin{itemize}
-      \item $58\%$ der Befehle in $1 \mu s$
-      \item $40\%$ der Befehle in $2 \mu s$
-      \item $2\%$ der Befehle in $4 \mu s$
-    \end{itemize}
-    ab. Die langsamsten Befehle sind beispielsweise Multiplikation und Division.
+	\item $1,2$ - $18 MHz$ Taktrate, oft werden $12 MHz$ verwendet
+	\item 4 kByte ROM
+	\item 128 Byte RAM
+	\item 4 8-Bit Eingabe- und Ausgabeports
+	\item 2 16-Bit Zähler beziehungsweise Zeitgeber
+	\item Eine USART-Schnittstelle
+	\item 5 Interruptquellen
+	\item Bei einer Taktrate von $12 MHz$ laufen
+	      \begin{itemize}
+		      \item $58\%$ der Befehle in $1 \mu s$
+		      \item $40\%$ der Befehle in $2 \mu s$
+		      \item $2\%$ der Befehle in $4 \mu s$
+	      \end{itemize}
+	      ab. Die langsamsten Befehle sind beispielsweise Multiplikation und Division.
 \end{itemize}
 
 
@@ -78,7 +78,48 @@ Was sollen wir denn Analysieren?
 
 \section{Programmentwurf}
 
-Wird hübsch
+% TODO: Irgendwo "eingabebereit" erklären
+Der Programmfluss, wie er in \autoref{fig:programmfluss} dargestellt ist, beschreibt den Ablauf des Programms.\\
+Nach dem Start des Simulators beginnt die Initialisierung des Programms - der benötigte Speicher wird zurückgesetzt, Spieler 1 als aktiver Spieler ausgewählt und der Timer gestartet. Danach beginnt die Hauptschleife.\\
+In ihr wird wiederholt abgefragt, ob aktuell eine Eingabe getätigt werden kann - also, ob das Keypad vollständig auf false gestellt wurde.
+Ist dies möglich prüft eine Schleife auf eine Eingabe durch den aktiven Spieler. Wurde diese ausgeführt, wird anhand des Zuges überprüft, ob der Spieler es geschafft hat 4 Steine nebeneinander zu setzen. Ist dies der Fall, hat er gewonnen - andernfalls kommt es zum Spielerwechsel und die Hauptschleife beginnt von Neuem.
+
+\begin{figure}
+	\centering \tiny
+  \begin{tikzpicture}[node distance=1.5cm]
+    \node (start) [startstop] {Start};
+    \node (init) [process, below of=start] {Initialisierung};
+    \node (mainloop) [process, below of=init] {Eingabepad prüfen};
+    \node (readyforinput) [decision, below of=mainloop, yshift=-1.0cm] {Eingabe zurückgesetzt?};
+    \node (getinput) [process, below of=readyforinput, yshift=-1.0cm] {Eingabepad prüfen};
+    \node (checkplayerdecision) [decision, below of=getinput, yshift=-1.0cm] {Eingabe gesetzt?};
+    \node (checkturn) [process, below of=checkplayerdecision, yshift=-1.0cm] {Matrix prüfen};
+    \node (checkwin) [decision, below of=checkturn, yshift=-1cm] {Gewonnen?};
+    \node (switchplayers) [process, right of=checkwin, xshift=4cm] {Spieler wechseln};
+    \node (end) [startstop, below of=checkwin, yshift=-1cm] {Ende};
+    \draw [arrow] (start) -- (init);
+    \draw [arrow] (init) -- (mainloop);
+    \draw [arrow] (mainloop) -- (readyforinput);
+    \draw [arrow] (readyforinput) -- node[anchor=west] {ja} (getinput);
+    \draw [arrow] (readyforinput) -- node[anchor=south] {nein} (readyforinput-|switchplayers.west) |- ([yshift=8pt]mainloop.south east);
+    \draw [arrow] (getinput) -- (checkplayerdecision);
+    \draw [arrow] (checkplayerdecision) -- node[anchor=south] {nein} (checkplayerdecision-|switchplayers.west) |- ([yshift=8pt]getinput.south east);
+    \draw [arrow] (checkplayerdecision) -- node[anchor=west] {ja} (checkturn);
+    \draw [arrow] (checkturn) -- (checkwin);
+    \draw [arrow] (checkwin) -- node[anchor=south] {nein} (switchplayers);
+    \draw [arrow] (checkwin) -- node[anchor=west] {ja} (end);
+    \draw [arrow] (switchplayers) |- ([yshift=-8pt]mainloop.north east);
+  \end{tikzpicture}
+
+  \caption{Programmfluss des Spieles}
+	\label{fig:programmfluss}
+\end{figure}
+
+Zusätzlich zu dieser Hauptschleife wird über ein Timerinterrupt regelmäßig eine Routine ausgeführt, welche das aktuelle Spielbrett ausgibt. Dabei werden die vom ersten Spieler gesetzten Steine auf der LED-Matrix durchgängig beleuchtet, während die Steine des zweiten Spielers blinken.
+
+\begin{defStrich}[Hinweis]
+  Die Wiederholrate, mit welcher die LED-Matrix aktualisiert wird ist zu groß, um den Blinkeffekt sehen zu können. Sie musste allerdings für die Entwicklung im Simulator so stark erhöht werden, da der Simulator deutlich langsamer als die tatsächliche Hardware ist.
+\end{defStrich}
 
 \chapter{Implementation}
 
