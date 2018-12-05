@@ -57,7 +57,7 @@ mov th0, #0c0h
 setb tr0
 mov aktiverspieler, #spieler1
 call display
-setb EINGABEBEREIT
+clr EINGABEBEREIT
 clr C
 
 loop:
@@ -291,7 +291,7 @@ jmp leerlauf
 leerlauf:
 mov a, p2
 cpl a
-cjne a, #10000001b, leerlauf
+cjne a, #10000001b, leerlauf ; wenn erste und letzter button gedrückt -> neustart
 jmp neustart
 
 neustart:
@@ -305,10 +305,9 @@ mov SPIELER2+5, #00h
 mov SPIELER2+6, #00h
 mov SPIELER2+7, #00h
 
-; Nach reset wird auf leere Eingabe gewartet
-clr EINGABEBEREIT
+; Nach reset wird spieler gewechselt und auf leere eingabe gewartet
 mov AKTIVERSPIELER, #SPIELER2
-ret
+ret ; Von spielstand_vert oder spielstand_horiz, um in normale loop zurückzukehren
 
 ; Datenbankeintrag für '1'
 display_1:
