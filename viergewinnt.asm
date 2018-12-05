@@ -21,6 +21,7 @@ ENDM
 
 CMP_HORIZ MACRO num
 	mov a, R1
+	clr c
 	subb a, num
 	jc spielstand_horiz_exit
 	jz win
@@ -56,8 +57,6 @@ clr C
 loop:
 ; Eingabe abfragen
 call eingabe_abfragen
-; Spielstand aktualisieren
-call spielstand
 
 JMP loop
 
@@ -65,6 +64,7 @@ JMP loop
 timer:
 INC R6
 MOV a, R6
+clr c
 subb a, #02h
 jnc timer_show
 ret
@@ -163,6 +163,7 @@ mov a, @r0
 orl a, r3
 mov @r0, a
 
+; R2 => eingefügte Reihe
 call spielstand
 
 clr EINGABEBEREIT
@@ -183,20 +184,20 @@ spieler_zwei:
 mov AKTIVERSPIELER, #SPIELER1
 ret
 
+; R2 => eingefügte Reihe
 spielstand:
 call spielstand_horiz
 call spielstand_vert
 ret
 
+; R2 => eingefügte Reihe
 spielstand_horiz:
 ; Wenn aktueller Spieler 4 horizontal nebeneinander hat
 ; Für jede Zeile >= 127 auf = 127 testen und dann bis 4 mal nach rechts shiften
 ; Ist die Zeile 127, dann sind 4 Steine nebeneinander => Win
 
-mov R5, #7d
-
 mov a, aktiverspieler
-add a, R5
+add a, R2
 mov R0, a
 mov a, @R0
 mov R1, a
@@ -210,13 +211,36 @@ CMP_HORIZ #240d
 spielstand_horiz_exit:
 ret
 
+; R2 => eingefügte Reihe
 spielstand_vert:
 ; Wenn aktueller Spieler 4 vertikal übereinander hat
-; 8 Bytes auf 0 setzen
-; Wenn bit1 gesetzt -> erstes Byte um 1 erhöhen
-; Wenn bitn gesetzt -> ntes Byte um 1 erhöhen
-; Wenn ein Byte = 4 => Win
-;jmp win
+; Wenn eingefügte Reihe < 4 dann eingefügte Reihe bis +3 verunden
+; Ergebnis > 0 => 4 Steine übereinander
+
+mov a, R2
+clr c
+subb a, #5d
+jnc spielstand_vert_exit
+
+mov a, aktiverspieler
+add a, R2
+mov R0, a
+mov a, @R0
+
+inc R0
+anl a, @R0
+
+inc R0
+anl a, @R0
+
+inc R0
+anl a, @R0
+
+jz spielstand_vert_exit
+
+jmp win
+
+spielstand_vert_exit:
 ret
 
 win:
