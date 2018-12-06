@@ -100,7 +100,7 @@ Dann wird der Spieler gewechselt -- also fängt der Verlierer an -- und das Spie
     \node (readyforinput) [decision, below of=mainloop, yshift=-1.0cm] {Eingabe zurückgesetzt?};
     \node (getinput) [process, below of=readyforinput, yshift=-1.0cm] {Eingabepad auslesen};
     \node (checkplayerdecision) [decision, below of=getinput, yshift=-1.0cm] {Eingabe gesetzt?};
-    \node (checkturn) [process, below of=checkplayerdecision, yshift=-1.0cm] {Spielstand aktualisieren};
+    \node (checkturn) [process, below of=checkplayerdecision, yshift=-1.0cm] {Eingabe auswerten};
     \node (checkwin) [decision, below of=checkturn, yshift=-1cm] {Gewonnen?};
     \node (switchplayers) [process, right of=checkwin, xshift=5cm] {Spieler wechseln};
     \node (end) [startstop, below of=checkwin, yshift=-1cm] {Spielende};
