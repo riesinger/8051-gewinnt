@@ -21,9 +21,9 @@ ENDM
 
 CMP_HORIZ MACRO num
 mov a, R1
+anl a, num
 clr c
 subb a, num
-jc spielstand_horiz_exit
 jz win
 ENDM
 
