@@ -76,7 +76,7 @@ In diesem Kapitel geht es um die in dem Projekt zum Einsatz kommende IDE (Integr
 
 \begin{figure}
 	\centering
-	\includegraphics[width=15cm]{ide.png}
+	\includegraphics[width=.8\textwidth]{ide.png}
 	\caption{MCU-8051 IDE}
 	\label{img:grafik-ide}
 \end{figure}
@@ -154,7 +154,9 @@ Für Vier-Gewinnt kommen folgende Funktionen zum Einsatz:
 	\item Timer
 \end{itemize}
 
-Im ersten Schritt haben wir die Ein- und Ausgabemöglichkeit festgelegt. Als Ausgabe kommt eine LED Matrix zum Einsatz, dessen horizontale über den Port 0 und vertikale über den Port 1 angesteuert und gleichermaßen für das Spielfeld steht. 
+Im ersten Schritt haben wir die Ein- und Ausgabemöglichkeit festgelegt. Als Ausgabe kommt eine LED Matrix, wie in \autoref{img:grafik-ledmatrix} zu sehen ist zum Einsatz, dessen Horizontale über den Port 0 und Vertikale über den Port 1 angesteuert werden. Auf der Matrix werden die Steine der Spieler durch einzelne LEDs angezeigt.
+Um zwischen den Steinen beider Spieler unterscheiden zu können, werden die des zweiten Spielers nur bei jeder zweiten Ausgabe angezeigt, sodass diese blinken.
+
 
 \begin{figure}
 	\centering
@@ -163,7 +165,8 @@ Im ersten Schritt haben wir die Ein- und Ausgabemöglichkeit festgelegt. Als Aus
 	\label{img:grafik-ledmatrix}
 \end{figure}
 
-Für die Festlegung, welchen Zug der Spieler getätigt bzw. wo dieser einen Stein gesetzt hat kommt ein Keypad zum Einsatz. Dieses wird über Port 2 angesteuert und legt nach setzen der Verbinung 
+Für die Festlegung, welchen Zug der Spieler getätigt bzw. wo dieser einen Stein gesetzt hat kommt ein Keypad, wie es in \autoref{img:grafik-keypad} zu sehen ist zum Einsatz.
+Dieses ist mit Port 2 verbunden. Wird ein Schalter betätigt wird der jeweilige Pin mit dem Massepotential verbunden, also auf \enquote{low} gesetzt.
 
 \begin{figure}
 	\centering
@@ -172,10 +175,42 @@ Für die Festlegung, welchen Zug der Spieler getätigt bzw. wo dieser einen Stei
 	\label{img:grafik-keypad}
 \end{figure}
 
+Wenn das Spiel beginnt, werden zunächst alle Ports initialisiert, also Port 0 und Port 1 auf \enquote{low} gesetzt, um die Ausgabe zu löschen.
+Danach wird der Timer konfiguriert.
+Direkt im Anschluss springt der Mikrocomputer in eine Dauerschleife, in welcher er ständig abfragt, ob eine Eingabe getätigt wurde.
+Dies ist der Fall, wenn an Port 2 nicht mehr alle Bits auf \enquote{high} gesetzt sind. 
+Ausgewertet wird dies, indem zunächst der Wert von Port 2 in den Akkumulator geschrieben wird und anschließend invertiert wird. Sollte nun eine Null im Akkumulator vorliegen, wurde keine Eingabe getätigt.
+Andernfalls wird die Eingabe nun bearbeitet, indem berechnet wird, in welcher Zeile der durch den Schalter ausgewählten Spalte der Stein platziert werden muss. Dafür werden alle Zeilen von unten nach oben so lange durchlaufen, bis die aktuelle Zeile eine leere Zelle in der passenden Spalte hat. Sollte die oberste Spalte erreicht werden, ohne dass ein Stein platziert wurde, gilt dieser Zug als \enquote{verloren} und der nächste Spieler ist an der Reihe.
+
+Wurde ein Stein platziert, wird nun ausgewertet, ob der aktuelle Spieler das Spiel gewonnen hat. Dafür werden alle Zeilen von unten nach oben mit den möglichen Steinkombinationen verglichen. Dies geschieht, indem die Zeile mit einem \enquote{gewinnenden} Muster und-verknüpft wird. Entspricht der Zeilenwert nun einer Zahl, welche vier gesetzte Bits hat (15, 30, 60, 120, 240), so hat der aktuelle Spieler gewonnen.
+Falls auf diese Weise keine gewinnende Kombination gefunden werden konnte, wird der Spielstand nun Spaltenweise überprüft. Dafür werden immer vier übereinander liegende Zeilen und-verknüpft. Erhält man bei der Verknüpfung ein Ergebnis ungleich Null, so bedeutet dies, das vier Steine übereinander liegen und der aktuelle Spieler hat gewonnen.
+
+Wurde kein Gewinn festgestellt, wird der aktuelle Spieler gewechselt und es wird so lange gewartet, bis alle Knöpfe des Keypads deaktiviert wurden. Dadurch werden versehentliche Eingaben verhindert. 
+Ist das Keypad zurück gesetzt worden, kann der nächste Spieler eine Eingabe treffen und die Schleife läuft von vorne ab.
+
+Parallel zur Hauptschleife läuft ein Timer, welcher in definierten Zeitabständen einen Interrupt auslöst.
+Dieser Interrupt ist für das Ausgeben des aktuellen Spielstandes auf der LED-Matrix verantwortlich. 
+Da der Spielstand für jeden Spieler in 8 Bytes gespeichert ist, ist die Ausgabe sehr simpel. Für jede Zeile werden folgende Schritte ausgeführt:
+\begin{itemize}
+	\item Kopiere die Bitmaske, welche angibt, ob Spieler 2 ausgegeben werden soll in den Akkumulator (0x00 oder 0xFF)
+	\item Und-verknüpfe die Zeile (das Byte) von Spieler 2 mit dem Akkumulator
+	\item Oder-verknüpfe die Zeile (das Byte) von Spieler 1 mit dem Akkumulator
+	\item Kopiere den Akkumulatorinhalt in Port 0
+	\item Setze das Bit der entsprechenden Zeile in Port 1 auf \enquote{high}
+	\item Setze das Bit der entsprechenden Zeile in Port 1 auf \enquote{low}
+\end{itemize}
+
+Falls ein Spieler gewonnen hat, wird dies signalisiert, indem der Spielstand von Spieler 1 geleert wird und in den Spielstand von Spieler 2 entweder eine Eins oder eine Zwei (entsprechende Muster auf der Matrix) geschrieben werden, je nach dem welcher Spieler gewonnen hat.
+Dies sorgt dafür, dass die Spielerzahl des gewinnenden Spielers auf der Matrix blinkt.
+Sobald das Spielstand durch die Eingabe der Zahl 129 (erster und letzter Schalter) auf dem Keypad zurückgesetzt wird, fängt das Spiel erneut an.
+
+
 \FloatBarrier
 \chapter{Zusammenfassung}
 
-War gut, nochmal machen!
+Insgesamt ist ein spielbares Vier-Gewinnt-Spiel entstanden, welches den Gewinner ausgeben kann und zurückgesetzt werden kann.
+Leider war es aus zeitlichen Gründen nicht möglich, eine Abfrage für vier diagonal liegende Steine zu programmieren, sodass es relativ schwierig ist in einem Spiel gegen einen anderen Spieler zu gewinnen.
+Die Simulatorgeschwindigkeit wirkt sich leider auch negativ auf das Spielerlebnis aus, da es relativ lange dauert, bis eine Eingabe sichtbar wird. 
 
 
 \end{document}
