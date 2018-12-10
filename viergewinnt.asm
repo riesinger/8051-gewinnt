@@ -129,7 +129,6 @@ mov a, p2
 cpl a
 mov r3, a
 jz eingabe_null
-; TODO: Gegebenenfalls überprüfen, ob mehrere Buttons gedrückt wurden
 
 ; Wenn wir nicht eingabebereit sind, dann gehen wir wieder zurück
 jnb eingabebereit, eingabe_fertig
@@ -198,10 +197,6 @@ ret
 
 ; R2 => eingefügte Reihe
 spielstand_horiz:
-; Wenn aktueller Spieler 4 horizontal nebeneinander hat
-; Für jede Zeile >= 127 auf = 127 testen und dann bis 4 mal nach rechts shiften
-; Ist die Zeile 127, dann sind 4 Steine nebeneinander => Win
-
 mov a, aktiverspieler
 add a, R2
 mov R0, a
