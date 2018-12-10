@@ -69,7 +69,7 @@ Auch technisch war der 8051 zu damaligen Zeiten hochmodern, was man folgenden Ec
 	      ab. Die langsamsten Befehle sind beispielsweise Multiplikation und Division.
 \end{itemize}
 
-
+\FloatBarrier
 \section{Entwicklungsumgebung MCU-8051 IDE}
 
 In diesem Kapitel geht es um die in dem Projekt zum Einsatz kommende IDE (Integrated Development Evironment). Dabei handelt es sich um einen Simulator zur Entwicklung verschiedener Mikrocontroller unter optionaler Verwendung von emulierten elektronischen Peripheriegeräten. Dabei handelt es sich beispielsweise um eine 8-Segement-Anzeige, LEDs, LED-Displays, LED-Matrizen, eine einfache Eingabe oder Matrizen-Eingabe, LCD-Anzeigen oder Temperatur-Sensoren. Dies können vom Anwender frei hinzufügt und nach ordnungsgemäßer Konfiguration eingesetzt werden. Die Software wurde sowohl für Linux, als auch Windows Betriebssysteme entwickelt.
@@ -82,7 +82,7 @@ In diesem Kapitel geht es um die in dem Projekt zum Einsatz kommende IDE (Integr
 \end{figure}
 
 Unterteilt wird die IDE in vier verschiedene Bereiche. Mittig befindet sich der eingebaute Texteditor mit zusätzlichem Syntaxhighlighting, -validierung und -autocompleting - In diesem kann in C und Assembler programmiert werden. Links und rechts daneben befindet sich die Projektübersicht und einem Panel zum Debuggen. Darunter die Anzeige für den Speicher, Akkumulator und dem Register des Prozessors. Diese beinhaltet darüber hinaus noch den Timer und die Ports für eine externe Kommunikation.
-
+\FloatBarrier
 \chapter{Konzept}
 
 Entwickelt werden soll ein 4-Gewinnt Spiel für zwei Spieler.
@@ -146,10 +146,33 @@ Zusätzlich zu dieser Hauptschleife wird über ein Timerinterrupt regelmäßig e
   Die Wiederholrate, mit welcher die LED-Matrix aktualisiert wird ist zu groß, um den Blinkeffekt sehen zu können. Sie musste allerdings für die Entwicklung im Simulator so stark erhöht werden, da der Simulator deutlich langsamer als die tatsächliche Hardware ist.
 \end{highlight}
 
-\chapter{Implementation}
+\FloatBarrier
+\chapter{Implementierung}
+Für Vier-Gewinnt kommen folgende Funktionen zum Einsatz:
+\begin{itemize}	
+	\item Port 0 bis 2
+	\item Timer
+\end{itemize}
 
-In Assembler
+Im ersten Schritt haben wir die Ein- und Ausgabemöglichkeit festgelegt. Als Ausgabe kommt eine LED Matrix zum Einsatz, dessen horizontale über den Port 0 und vertikale über den Port 1 angesteuert und gleichermaßen für das Spielfeld steht. 
 
+\begin{figure}
+	\centering
+	\includegraphics[width=5cm]{ledmatrix.png}
+	\caption{LED Matrix - Ausgabewerk}
+	\label{img:grafik-ledmatrix}
+\end{figure}
+
+Für die Festlegung, welchen Zug der Spieler getätigt bzw. wo dieser einen Stein gesetzt hat kommt ein Keypad zum Einsatz. Dieses wird über Port 2 angesteuert und legt nach setzen der Verbinung 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=5cm]{keypad.png}
+	\caption{Keypad - Eingabewerk}
+	\label{img:grafik-keypad}
+\end{figure}
+
+\FloatBarrier
 \chapter{Zusammenfassung}
 
 War gut, nochmal machen!
